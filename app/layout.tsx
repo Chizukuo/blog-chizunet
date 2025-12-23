@@ -17,13 +17,6 @@ export const metadata: Metadata = {
     default: "Chizunet Blog | Thoughts & Code",
     template: "%s | Chizunet Blog"
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-    viewportFit: 'cover',
-  },
   description: "A minimalist technical blog powered by GitHub Issues, exploring computer science, design, and technology.",
   keywords: ["Blog", "Technology", "Computer Science", "Design", "GitHub Issues CMS", "Next.js", "React", "TypeScript"],
   authors: [{ name: "Chizukuo", url: "https://github.com/Chizukuo" }],
@@ -73,6 +66,14 @@ export const metadata: Metadata = {
     shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png",
   },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({

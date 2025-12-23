@@ -2,7 +2,6 @@
 name: New Blog Post
 about: Create a new blog post with multi-language support.
 title: "[POST] "
-labels: post
 assignees: ''
 
 ---

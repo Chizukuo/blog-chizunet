@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Github, Mail, Moon, Sun, Monitor, Languages, X, Menu } from 'lucide-react';
+import { Github, Mail, Moon, Sun, Monitor, Languages, X, Menu, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useI18n } from '@/hooks/useI18n';
 import { translations } from '@/lib/translations';
@@ -49,6 +49,25 @@ export default function Navbar() {
     setMounted(true);
   }, []);
 
+  const langRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setShowLangMenu(false);
+      }
+    }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setShowLangMenu(false);
+    }
+    document.addEventListener('mousedown', handleClick);
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('keydown', handleKey);
+    };
+  }, []);
+
   const cycleTheme = () => {
     const modes = ['light', 'dark', 'system'];
     const nextIndex = (modes.indexOf(theme || 'system') + 1) % modes.length;
@@ -82,7 +101,7 @@ export default function Navbar() {
       }}
       animate={hidden ? "hidden" : "visible"}
       transition={{ duration: 0.35, ease: "easeInOut" }}
-      className="fixed top-0 w-full z-50 px-4 sm:px-6 py-4 sm:py-6 flex justify-between items-center backdrop-blur-sm"
+      className="fixed top-0 w-full z-50 px-4 sm:px-6 py-4 sm:py-6 flex justify-between items-center backdrop-blur-sm bg-white/5 dark:bg-stone-900/5 border-b border-cheese-100/20 dark:border-stone-800/30"
     >
       <motion.div
         initial={reduceMotion ? undefined : { opacity: 0, x: -20 }}
@@ -102,9 +121,9 @@ export default function Navbar() {
         </div>
       </motion.div>
 
-      <div className="hidden md:flex gap-4 items-center">
+      <div className="hidden md:flex gap-3 items-center">
         {/* Language Switcher */}
-        <div className="relative">
+        <div ref={langRef} className="relative">
           <motion.button
             whileHover={reduceMotion ? undefined : { scale: 1.05 }}
             whileTap={reduceMotion ? undefined : { scale: 0.98 }}
@@ -112,11 +131,12 @@ export default function Navbar() {
             aria-haspopup="menu"
             aria-expanded={showLangMenu}
             aria-controls="lang-menu"
-            className="h-10 w-10 p-2 bg-white/50 dark:bg-stone-800/50 rounded-xl hover:bg-cheese-200 dark:hover:bg-stone-700 transition-colors duration-200 ease-theme text-cheese-800 dark:text-cheese-200 flex items-center justify-center gap-2"
+            aria-label={t.langName}
+            className="h-10 px-3 py-2 bg-white/50 dark:bg-stone-800/50 rounded-xl hover:bg-cheese-200 dark:hover:bg-stone-700 transition-colors duration-200 ease-theme text-cheese-800 dark:text-cheese-200 flex items-center justify-center gap-2"
           >
             <Languages size={20} aria-hidden="true" />
-            <span className="sr-only">{t.langName}</span>
-            <span className="text-xs font-bold hidden md:block" aria-hidden>{t.langName}</span>
+            <span className="text-xs font-bold hidden md:inline-block" aria-hidden>{t.langName}</span>
+            <ChevronDown size={14} className="hidden md:inline-block" aria-hidden />
           </motion.button>
 
           <AnimatePresence>

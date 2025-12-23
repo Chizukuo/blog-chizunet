@@ -44,8 +44,17 @@ const config: Config = {
           '"Hiragino Kaku Gothic ProN"',
           '"Meiryo"',
           'sans-serif',
-        ],
-      },
+        ],        mono: [
+          'var(--font-mono)',
+          'ui-monospace',
+          'SFMono-Regular',
+          'Menlo',
+          'Monaco',
+          'Consolas',
+          '"Liberation Mono"',
+          '"Courier New"',
+          'monospace',
+        ],      },
       animation: {
         'float': 'float 6s ease-in-out infinite',
         'blob': 'blob 7s infinite',
@@ -64,21 +73,37 @@ const config: Config = {
       },
       transitionTimingFunction: {
         'theme': 'cubic-bezier(0.4, 0, 0.2, 1)',
-        'theme-spring': 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+        'theme-spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        'smooth': 'cubic-bezier(0.65, 0, 0.35, 1)',
       },
       typography: (theme: any) => ({
         DEFAULT: {
           css: {
             color: theme('colors.cheese.950'),
+            maxWidth: 'none',
+            lineHeight: '1.8',
             a: {
               color: theme('colors.cheese.800'),
+              textDecoration: 'none',
+              borderBottom: `2px solid ${theme('colors.cheese.200')}`,
+              transition: 'all 0.2s ease',
               '&:hover': {
                 color: theme('colors.cheese.600'),
+                backgroundColor: theme('colors.cheese.100'),
+                borderBottomColor: theme('colors.cheese.500'),
               },
             },
             'h1, h2, h3, h4': {
               color: theme('colors.cheese.950'),
-              fontWeight: '700',
+              fontWeight: '800',
+              letterSpacing: '-0.02em',
+            },
+            blockquote: {
+              fontWeight: '500',
+              fontStyle: 'italic',
+              color: theme('colors.cheese.900'),
+              borderLeftColor: theme('colors.cheese.500'),
+              backgroundColor: theme('colors.cheese.50'),
             },
             code: {
               color: theme('colors.pink.500'),
@@ -95,17 +120,28 @@ const config: Config = {
             },
           },
         },
-        dark: {
+        invert: {
           css: {
-            color: theme('colors.cheese.50'),
+            color: theme('colors.stone.300'),
             a: {
               color: theme('colors.cheese.400'),
+              borderBottomColor: theme('colors.cheese.900'),
               '&:hover': {
                 color: theme('colors.cheese.300'),
+                backgroundColor: theme('colors.cheese.950'),
+                borderBottomColor: theme('colors.cheese.400'),
               },
             },
             'h1, h2, h3, h4': {
-              color: theme('colors.cheese.50'),
+              color: theme('colors.stone.50'),
+            },
+            blockquote: {
+              color: theme('colors.stone.200'),
+              backgroundColor: theme('colors.stone.900'),
+              borderLeftColor: theme('colors.cheese.600'),
+            },
+            strong: {
+              color: theme('colors.stone.50'),
             },
             code: {
               color: theme('colors.pink.400'),

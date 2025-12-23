@@ -53,7 +53,7 @@ export default function PostContent({ initialPost, slug }: PostContentProps) {
           <div className="bg-white/50 dark:bg-stone-900/50 backdrop-blur-md p-4 sm:p-8 md:p-12 rounded-none sm:rounded-[2.5rem] shadow-none sm:shadow-xl border-x-0 sm:border-x border-y border-cheese-200/50 dark:border-stone-800/50 mb-12 relative min-h-[200px]">
             {loading && (
               <div className="absolute inset-0 bg-white/20 dark:bg-black/20 backdrop-blur-[2px] z-20 flex items-center justify-center rounded-[2.5rem]">
-                <div className={`w-10 h-10 border-4 border-cheese-500 border-t-transparent rounded-full ${reduceMotion ? '' : 'animate-spin'}`} aria-hidden={reduceMotion} />
+                <div className={`w-10 h-10 border-4 border-cheese-500 border-t-transparent rounded-full ${reduceMotion ? '' : 'animate-spin'}`} aria-hidden={Boolean(reduceMotion)} />
               </div>
             )}
             <MarkdownRenderer content={post.body} />

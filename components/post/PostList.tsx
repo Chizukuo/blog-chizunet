@@ -78,7 +78,7 @@ export default function PostList({ initialPosts }: PostListProps) {
               exit={reduceMotion ? undefined : { opacity: 0 }}
               className="col-span-full flex justify-center py-20"
             >
-              <div className="w-12 h-12 border-4 border-cheese-500 border-t-transparent rounded-full animate-spin motion-reduce:animate-none" aria-hidden={reduceMotion} />
+              <div className="w-12 h-12 border-4 border-cheese-500 border-t-transparent rounded-full animate-spin motion-reduce:animate-none" aria-hidden={Boolean(reduceMotion)} />
             </motion.div>
           ) : posts.length > 0 ? (
             posts.map((post, index) => (

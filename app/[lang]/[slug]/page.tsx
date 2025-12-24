@@ -30,24 +30,35 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps) {
   const post = await getPostBySlug(params.slug, params.lang);
   if (!post) return { title: "Post Not Found" };
+
+  const baseUrl = 'https://blog.chizunet.cc';
+  const url = `${baseUrl}/${params.lang}/${params.slug}`;
+  const description = post.description || post.body.slice(0, 160).replace(/[#*`]/g, ''); // Clean markdown characters for description
   
   return {
     title: post.title,
-    description: post.description || post.body.slice(0, 160),
+    description: description,
     openGraph: {
       title: post.title,
-      description: post.description || post.body.slice(0, 160),
+      description: description,
+      url: url,
+      locale: params.lang === 'zh' ? 'zh_CN' : params.lang === 'ja' ? 'ja_JP' : 'en_US',
       type: 'article',
       publishedTime: post.created_at,
       images: post.coverImage ? [{ url: post.coverImage }] : [],
       authors: [post.user.login],
+      siteName: 'Chizunet Blog',
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
-      description: post.description || post.body.slice(0, 160),
+      description: description,
+      creator: '@chizukuo',
       images: post.coverImage ? [post.coverImage] : [],
-    }
+    },
+    alternates: {
+      canonical: url,
+    },
   };
 }
 

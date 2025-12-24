@@ -14,7 +14,7 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: '--font-mon
 export const metadata: Metadata = {
   metadataBase: new URL('https://blog.chizunet.cc'),
   title: {
-    default: "Chizunet Blog | Thoughts & Code",
+    default: "Chizunet Blog",
     template: "%s | Chizunet Blog"
   },
   description: "A minimalist technical blog powered by GitHub Issues, exploring computer science, design, and technology.",
@@ -29,10 +29,6 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    locale: "zh_CN",
-    url: "https://blog.chizunet.cc",
-    title: "Chizunet Blog",
-    description: "A minimalist technical blog powered by GitHub Issues",
     siteName: "Chizunet Blog",
     images: [
       {
@@ -45,8 +41,6 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Chizunet Blog",
-    description: "A minimalist technical blog powered by GitHub Issues",
     creator: "@chizukuo",
     images: ["/og-image.png"],
   },

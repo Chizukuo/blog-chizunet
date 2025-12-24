@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { zhCN, enUS, ja } from "date-fns/locale";
 import { Calendar, User, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { Post } from '@/types';
 
 interface PostHeaderProps {
@@ -67,11 +68,13 @@ export default function PostHeader({ post }: PostHeaderProps) {
 
       {post.coverImage && (
         <div className="mt-8 sm:mt-12 relative w-full aspect-video sm:aspect-[2/1] rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-xl border border-cheese-200/50 dark:border-stone-800/50 group">
-          <img
+          <Image
             src={post.coverImage}
             alt={post.title}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            priority="true"
+            priority
+            fill
+            sizes="100vw"
           />
         </div>
       )}

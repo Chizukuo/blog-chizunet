@@ -21,6 +21,9 @@ export interface Post {
   user: User;
   html_url: string;
   slug: string;
+  description?: string;
+  coverImage?: string;
+  lang?: Locale;
 }
 
 export type Locale = 'zh' | 'en' | 'ja';

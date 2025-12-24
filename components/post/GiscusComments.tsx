@@ -8,7 +8,11 @@ import { translations } from '@/lib/translations';
 import { MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function GiscusComments() {
+interface GiscusCommentsProps {
+  slug?: string;
+}
+
+export default function GiscusComments({ slug }: GiscusCommentsProps) {
   const [mounted, setMounted] = useState(false);
   const { resolvedTheme } = useTheme();
   const { locale, _hasHydrated } = useI18n();
@@ -28,8 +32,13 @@ export default function GiscusComments() {
   } as const)[currentLocale as keyof typeof translations];
 
   const themeUrl = typeof window !== 'undefined' 
-    ? `${window.location.origin}/giscus-${resolvedTheme === 'dark' ? 'dark' : 'light'}.css`
+    ? `${window.location.origin}/styles/giscus-cheese-${resolvedTheme === 'dark' ? 'dark' : 'light'}.css`
     : '';
+
+  // If we have a slug, use it as the mapping term to share comments across languages
+  // Otherwise fall back to pathname mapping
+  const mapping = slug ? "specific" : "pathname";
+  const term = slug || undefined;
 
   return (
     <motion.div 
@@ -51,13 +60,14 @@ export default function GiscusComments() {
         
         <div className="glass-panel rounded-[2.5rem] p-1 md:p-4 overflow-hidden">
           <Giscus
-            key={`${locale}-${resolvedTheme}`}
+            key={`${locale}-${resolvedTheme}-${slug}`}
             id="comments"
             repo={process.env.NEXT_PUBLIC_GISCUS_REPO as any}
             repoId={process.env.NEXT_PUBLIC_GISCUS_REPO_ID as string}
             category={process.env.NEXT_PUBLIC_GISCUS_CATEGORY}
             categoryId={process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID as string}
-            mapping="pathname"
+            mapping={mapping}
+            term={term}
             reactionsEnabled="1"
             emitMetadata="0"
             inputPosition="top"

@@ -16,7 +16,8 @@ export default function PostCard({ post }: PostCardProps) {
   const { locale, _hasHydrated } = useI18n();
   const reduceMotion = useReducedMotion();
   const currentLocale = _hasHydrated ? locale : 'zh';
-  const snippet = post.body.slice(0, 150).replace(/[#*`]/g, '') + '...';
+  
+  const snippet = post.description || (post.body.slice(0, 150).replace(/[#*`]/g, '') + '...');
 
   const dateLocales = {
     zh: zhCN,
@@ -30,9 +31,21 @@ export default function PostCard({ post }: PostCardProps) {
       whileTap={reduceMotion ? undefined : { scale: 0.98 }}
       className="h-full"
     >
-      <Link href={`/${post.slug}`} aria-label={`查看文章 ${post.title}`} className="block h-full">
+      <Link href={`/${post.lang || 'zh'}/${post.slug}`} aria-label={`查看文章 ${post.title}`} className="block h-full">
         <article role="article" aria-labelledby={`post-title-${post.id}`} className="bg-white dark:bg-stone-800/50 p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] shadow-sm sm:shadow-lg hover:shadow-md sm:hover:shadow-2xl border border-cheese-200/50 dark:border-stone-700/50 flex flex-col h-full relative overflow-hidden group transition-all duration-700 ease-theme-spring">
           <div className="relative z-10 flex flex-col h-full">
+            {post.coverImage && (
+              <div className="mb-6 -mx-5 sm:-mx-8 -mt-5 sm:-mt-8 relative h-48 sm:h-64 overflow-hidden shadow-sm">
+                <img 
+                  src={post.coverImage} 
+                  alt={post.title}
+                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-theme-spring"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+              </div>
+            )}
+
             <div className="flex items-center gap-4 text-sm text-cheese-800/60 dark:text-cheese-200/60 mb-4 font-medium">
               <div className="flex items-center gap-1">
                 <Calendar className="w-4 h-4" />

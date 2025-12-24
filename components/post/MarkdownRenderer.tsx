@@ -6,7 +6,9 @@ import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
-import { Copy, Check, Terminal } from 'lucide-react';
+import rehypeRaw from 'rehype-raw';
+import rehypeSlug from 'rehype-slug';
+import { Copy, Check, Terminal, ChevronRight } from 'lucide-react';
 import { common, createLowlight } from 'lowlight';
 import 'highlight.js/styles/github-dark.css';
 import 'katex/dist/katex.min.css';
@@ -47,7 +49,7 @@ const customShell = (hljs: any) => ({
     hljs.APOS_STRING_MODE,
     {
       className: 'meta',
-      begin: /^\s*\$/,
+      begin: /^\s*$/,
       relevance: 0
     },
     {
@@ -198,6 +200,8 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     <div className="prose prose-cheese dark:prose-invert max-w-none notranslate">
       <ReactMarkdown
         rehypePlugins={[
+          rehypeRaw,
+          rehypeSlug,
           [rehypeHighlight, { 
             languages: allLanguages,
             detect: true,
@@ -207,9 +211,36 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         ]}
         remarkPlugins={[remarkGfm, remarkMath]}
         components={{
-          a: ({ node, ...props }) => (
-            <a {...props} target="_blank" rel="noopener noreferrer" />
-          ),
+          h1: ({ node, ...props }) => <h1 {...props} className="scroll-mt-32 text-4xl font-black text-stone-900 dark:text-stone-50 mb-8 mt-12 tracking-tight" />,
+          h2: ({ node, ...props }) => <h2 {...props} className="scroll-mt-32 text-3xl font-bold text-stone-800 dark:text-stone-100 mb-6 mt-10 tracking-tight border-b border-cheese-200/50 dark:border-stone-800/50 pb-2" />,
+          h3: ({ node, ...props }) => <h3 {...props} className="scroll-mt-32 text-2xl font-bold text-stone-800 dark:text-stone-100 mb-4 mt-8" />,
+          h4: ({ node, ...props }) => <h4 {...props} className="scroll-mt-32 text-xl font-bold text-stone-800 dark:text-stone-200 mb-3 mt-6" />,
+          h5: ({ node, ...props }) => <h5 {...props} className="scroll-mt-32 text-lg font-bold text-stone-800 dark:text-stone-200 mb-2 mt-4" />,
+          h6: ({ node, ...props }) => <h6 {...props} className="scroll-mt-32 text-base font-bold text-stone-800 dark:text-stone-200 mb-2 mt-4 uppercase tracking-wider" />,
+          p: ({ node, ...props }) => <p {...props} className="mb-6 leading-relaxed text-stone-700 dark:text-stone-300" />,
+          ul: ({ node, ...props }) => <ul {...props} className="my-6 ml-6 list-disc marker:text-cheese-500 dark:marker:text-cheese-600 space-y-2 text-stone-700 dark:text-stone-300" />,
+          ol: ({ node, ...props }) => <ol {...props} className="my-6 ml-6 list-decimal marker:text-cheese-500 dark:marker:text-cheese-600 space-y-2 font-medium text-stone-700 dark:text-stone-300" />,
+          li: ({ node, ...props }) => <li {...props} className="pl-2" />,
+          hr: ({ node, ...props }) => <hr {...props} className="my-12 border-stone-300 dark:border-stone-700" />,
+          strong: ({ node, ...props }) => <strong {...props} className="font-bold text-stone-900 dark:text-stone-50" />,
+          a: ({ node, ...props }) => {
+            // Check if it's an internal anchor link
+            const isAnchor = props.href?.startsWith('#');
+            // Check if it's a relative link (internal)
+            const isRelative = props.href?.startsWith('/');
+            
+            const linkProps = (isAnchor || isRelative)
+              ? {} 
+              : { target: "_blank", rel: "noopener noreferrer" };
+            
+            return (
+              <a 
+                {...props} 
+                {...linkProps} 
+                className="text-amber-600 dark:text-amber-400 no-underline hover:underline font-medium break-words transition-colors hover:text-amber-700 dark:hover:text-amber-300 underline-offset-4 decoration-amber-500 dark:decoration-amber-400 decoration-2" 
+              />
+            );
+          },
           img: ({ node, ...props }) => (
             <span className="block my-8">
               <img 
@@ -218,14 +249,52 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
                 loading="lazy"
               />
               {props.alt && (
-                <span className="block text-center text-sm text-cheese-900/40 dark:text-cheese-100/40 mt-3 font-medium italic">
+                <span className="block text-center text-sm text-stone-500 dark:text-stone-400 mt-3 font-medium italic">
                   {props.alt}
                 </span>
               )}
             </span>
           ),
           blockquote: ({ node, ...props }) => (
-            <blockquote {...props} />
+            <blockquote {...props} className="border-l-4 border-cheese-500 bg-cheese-50/50 dark:bg-stone-800/30 px-6 py-4 rounded-r-xl italic not-italic text-stone-700 dark:text-stone-300 shadow-sm my-6" />
+          ),
+          table: ({ node, ...props }) => (
+            <div className="my-6 w-full overflow-hidden rounded-lg border border-cheese-300 dark:border-stone-700 shadow-sm bg-white dark:bg-stone-900/50">
+              <div className="overflow-x-auto">
+                <table {...props} className="w-full text-left text-sm border-collapse !my-0" />
+              </div>
+            </div>
+          ),
+          thead: ({ node, ...props }) => (
+            <thead {...props} className="bg-cheese-100/80 dark:bg-stone-800 border-b border-cheese-300 dark:border-stone-700" />
+          ),
+          tr: ({ node, ...props }) => (
+            <tr {...props} className="border-b border-cheese-200/60 dark:border-stone-800 last:border-none hover:bg-cheese-50 dark:hover:bg-stone-800/50 transition-colors" />
+          ),
+          th: ({ node, ...props }) => (
+            <th {...props} className="px-4 py-3 font-bold text-stone-900 dark:text-stone-50 whitespace-nowrap" />
+          ),
+          td: ({ node, ...props }) => (
+            <td {...props} className="px-4 py-2.5 text-stone-700 dark:text-stone-300 leading-snug min-w-[120px]" />
+          ),
+          details: ({ node, ...props }) => (
+            <details 
+              {...props} 
+              className="group my-6 rounded-xl border border-cheese-200 dark:border-stone-800 bg-white dark:bg-stone-900/50 shadow-sm overflow-hidden [&>*:not(summary)]:px-6 [&>*:not(summary)]:last:pb-6" 
+            />
+          ),
+          summary: ({ node, ...props }) => (
+            <summary 
+              {...props} 
+              className="cursor-pointer px-6 py-4 font-bold text-stone-800 dark:text-stone-100 flex items-center justify-between select-none bg-cheese-50/50 dark:bg-stone-800/30 hover:bg-cheese-100/50 dark:hover:bg-stone-800/50 transition-colors [&::-webkit-details-marker]:hidden list-none outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-cheese-400"
+            >
+              <span className="flex items-center gap-3">
+                <div className="text-cheese-500 dark:text-stone-500 transition-transform duration-300 group-open:rotate-90">
+                  <ChevronRight size={20} />
+                </div>
+                {props.children}
+              </span>
+            </summary>
           ),
           code: ({ node, className, children, ...props }: any) => {
             const match = /language-(\w+)/.exec(className || '');

@@ -64,6 +64,17 @@ export default function PostHeader({ post }: PostHeaderProps) {
           </span>
         ))}
       </div>
+
+      {post.coverImage && (
+        <div className="mt-8 sm:mt-12 relative w-full aspect-video sm:aspect-[2/1] rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-xl border border-cheese-200/50 dark:border-stone-800/50 group">
+          <img
+            src={post.coverImage}
+            alt={post.title}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            priority="true"
+          />
+        </div>
+      )}
     </header>
   );
 }

@@ -29,11 +29,11 @@ body:
       description: Short summary for SEO and previews
     validations:
       required: false
-  - type: input
+  - type: textarea
     id: coverImage
     attributes:
-      label: Cover Image URL
-      description: URL to the cover image
+      label: Cover Image
+      description: URL or Markdown image (e.g. ![alt](url)). You can paste an image here to get a URL.
     validations:
       required: false
   - type: textarea

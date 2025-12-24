@@ -16,7 +16,7 @@ git diff --quiet HEAD^ HEAD -- \
   tailwind.config.ts \
   postcss.config.js \
   tsconfig.json \
-  next.config.mjs
+  next.config.*
 
 # If git diff --quiet finds changes in these paths, it returns 1 (proceed build)
 # If it finds NO changes, it returns 0 (ignore build)

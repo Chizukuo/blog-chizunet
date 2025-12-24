@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useParams } from 'next/navigation';
 import { Github, Mail, Moon, Sun, Monitor, Languages, X, Menu, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { useTheme } from 'next-themes';
@@ -14,6 +14,7 @@ import Logo from '@/components/ui/Logo';
 
 export default function Navbar() {
   const pathname = usePathname();
+  const params = useParams();
   const { theme, setTheme } = useTheme();
   const { locale, setLocale, _hasHydrated } = useI18n();
   const [mounted, setMounted] = useState(false);
@@ -49,6 +50,13 @@ export default function Navbar() {
     setMounted(true);
   }, []);
 
+  // Update global locale state when URL param changes
+  useEffect(() => {
+    if (params?.lang && typeof params.lang === 'string' && ['zh', 'en', 'ja'].includes(params.lang)) {
+      setLocale(params.lang as Locale);
+    }
+  }, [params?.lang, setLocale]);
+
   const langRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -74,8 +82,9 @@ export default function Navbar() {
     setTheme(modes[nextIndex]);
   };
 
-  // Use 'zh' as fallback during hydration to match server render
-  const currentLocale = _hasHydrated ? locale : 'zh';
+  // Determine current locale: URL param > persisted state > default
+  const urlLocale = (params?.lang as Locale) || undefined;
+  const currentLocale = urlLocale || (_hasHydrated ? locale : 'zh');
   const t = translations[currentLocale];
 
   const languages: { code: Locale; name: string }[] = [
@@ -91,6 +100,13 @@ export default function Navbar() {
       case 'dark': return <Moon size={20} />;
       default: return <Monitor size={20} />;
     }
+  };
+
+  const getLangLink = (langCode: string) => {
+    if (params?.slug) {
+      return `/${langCode}/${params.slug}`;
+    }
+    return `/${langCode}`;
   };
 
   return (
@@ -150,21 +166,23 @@ export default function Navbar() {
                 className="absolute right-0 mt-2 w-36 bg-white/90 dark:bg-stone-900/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-cheese-200/50 dark:border-stone-800/50 overflow-hidden z-50"
               >
                 {languages.map((lang) => (
-                  <button
+                  <Link
                     key={lang.code}
+                    href={getLangLink(lang.code)}
+                    scroll={false}
                     role="menuitem"
                     onClick={() => {
                       setLocale(lang.code);
                       setShowLangMenu(false);
                     }}
-                    className={`w-full px-4 py-3 text-sm font-bold text-left transition-colors ${
-                      locale === lang.code 
+                    className={`block w-full px-4 py-3 text-sm font-bold text-left transition-colors ${
+                      currentLocale === lang.code 
                         ? 'bg-cheese-500 text-white' 
                         : 'text-cheese-900 dark:text-cheese-100 hover:bg-cheese-100 dark:hover:bg-stone-800'
                     }`}
                   >
                     {lang.name}
-                  </button>
+                  </Link>
                 ))}
               </motion.div>
             )}
@@ -268,17 +286,19 @@ export default function Navbar() {
                     <p className="text-[10px] font-black text-cheese-500 uppercase tracking-[0.2em] mb-2 px-1">{t.language}</p>
                     <div className="grid grid-cols-1 gap-2">
                       {languages.map((lang) => (
-                        <button 
-                          key={lang.code} 
+                        <Link 
+                          key={lang.code}
+                          href={getLangLink(lang.code)}
+                          scroll={false}
                           onClick={() => { setLocale(lang.code); setShowMobileMenu(false); }} 
                           className={`px-5 py-4 text-left font-bold rounded-2xl transition-all text-lg active:scale-95 duration-200 ${
-                            locale === lang.code 
+                            currentLocale === lang.code 
                               ? 'bg-cheese-500 text-white shadow-lg shadow-cheese-500/30' 
                               : 'bg-cheese-50/50 dark:bg-stone-800/50 hover:bg-cheese-100 dark:hover:bg-stone-800'
                           }`}
                         >
                           {lang.name}
-                        </button>
+                        </Link>
                       ))}
                     </div>
                   </div>

@@ -61,7 +61,7 @@ export default function PostContent({ initialPost, slug }: PostContentProps) {
         </motion.div>
       </AnimatePresence>
 
-      <GiscusComments />
+      <GiscusComments slug={slug} />
     </article>
   );
 }

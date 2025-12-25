@@ -39,7 +39,7 @@ export default function PostContent({ initialPost, slug }: PostContentProps) {
   }, [locale, slug, _hasHydrated]);
 
   return (
-    <article className="max-w-4xl mx-auto relative z-10 pt-20 px-0 sm:px-0">
+    <article className="max-w-5xl 2xl:max-w-6xl mx-auto relative z-10 pt-20 px-0 sm:px-0">
       <AnimatePresence mode="wait">
         <motion.div
           key={locale}

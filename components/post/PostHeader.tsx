@@ -24,6 +24,23 @@ export default function PostHeader({ post }: PostHeaderProps) {
     ja: ja,
   };
 
+  const OPTIMIZED_DOMAINS = [
+    'github.com',
+    'avatars.githubusercontent.com',
+    'user-images.githubusercontent.com',
+    'private-user-images.githubusercontent.com',
+  ];
+
+  const shouldOptimize = (url: string) => {
+    try {
+      if (url.startsWith('/') || url.startsWith('data:')) return true; // Always optimize local/data images
+      const hostname = new URL(url).hostname;
+      return OPTIMIZED_DOMAINS.includes(hostname);
+    } catch {
+      return false;
+    }
+  };
+
   return (
     <header className="mb-8 sm:mb-12 space-y-4 sm:space-y-6 notranslate px-4 sm:px-0">
       <Link 
@@ -75,6 +92,7 @@ export default function PostHeader({ post }: PostHeaderProps) {
             priority
             fill
             sizes="100vw"
+            unoptimized={!shouldOptimize(post.coverImage)}
           />
         </div>
       )}

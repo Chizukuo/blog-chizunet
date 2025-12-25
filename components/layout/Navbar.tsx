@@ -85,7 +85,7 @@ export default function Navbar() {
   // Determine current locale: URL param > persisted state > default
   const urlLocale = (params?.lang as Locale) || undefined;
   const currentLocale = urlLocale || (_hasHydrated ? locale : 'zh');
-  const t = translations[currentLocale];
+  const t = (translations as any)[currentLocale] ?? translations['zh'];
 
   const languages: { code: Locale; name: string }[] = [
     { code: 'zh', name: '中文' },
@@ -117,9 +117,10 @@ export default function Navbar() {
       }}
       animate={hidden ? "hidden" : "visible"}
       transition={{ duration: 0.35, ease: "easeInOut" }}
-      className="fixed top-0 w-full z-50 px-4 sm:px-6 py-4 sm:py-6 flex justify-between items-center backdrop-blur-sm bg-white/5 dark:bg-stone-900/5 border-b border-cheese-100/20 dark:border-stone-800/30"
+      className="fixed top-0 w-full z-50 backdrop-blur-sm bg-white/5 dark:bg-stone-900/5 border-b border-cheese-100/20 dark:border-stone-800/30"
     >
-      <motion.div
+      <div className="mx-auto max-w-[120rem] px-4 sm:px-6 py-4 sm:py-6 flex justify-between items-center">
+        <motion.div
         initial={reduceMotion ? undefined : { opacity: 0, x: -20 }}
         animate={reduceMotion ? undefined : { opacity: 1, x: 0 }}
         className="flex items-center gap-6"
@@ -329,6 +330,7 @@ export default function Navbar() {
         </AnimatePresence>,
         document.body
       )}
+      </div>
     </motion.nav>
   );
 }

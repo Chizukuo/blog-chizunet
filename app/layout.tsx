@@ -97,11 +97,11 @@ export default function RootLayout({
           <div className="min-h-screen flex flex-col bg-cheese-50 dark:bg-[#0c0a09] text-cheese-950 dark:text-stone-200 transition-all duration-700 ease-theme-spring relative">
             <Background />
             <Navbar />
-            <main className="flex-grow mx-auto w-full max-w-7xl px-0 sm:px-6 lg:px-8 py-8 relative z-10">
+            <main className="flex-grow mx-auto w-full max-w-[120rem] px-0 sm:px-6 lg:px-8 py-8 relative z-10">
               {children}
             </main>
             <footer className="py-6 text-center text-sm text-gray-500 dark:text-gray-400 border-t border-cheese-200/50 dark:border-stone-800/50 backdrop-blur-md relative z-10">
-              <div className="max-w-4xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="max-w-[120rem] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <Logo compact />
                   <div className="hidden sm:flex items-center gap-4 text-sm font-medium">

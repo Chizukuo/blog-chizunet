@@ -22,7 +22,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const t = translations[params.lang];
+  const t = translations[params.lang] ?? translations['zh'];
   const baseUrl = 'https://blog.chizunet.cc';
   const url = `${baseUrl}/${params.lang}`;
 
@@ -70,7 +70,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function Home({ params }: PageProps) {
   const initialPosts = await getPosts(params.lang);
-  const t = translations[params.lang];
+  const t = translations[params.lang] ?? translations['zh'];
 
   const jsonLd = {
     "@context": "https://schema.org",

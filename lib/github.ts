@@ -114,11 +114,15 @@ function parseIssueBody(body: string) {
   const description = parseSection('Description');
   let coverImage = parseSection('Cover Image') || parseSection('Cover Image URL'); // Handle both old and new label names
 
-  // Check if coverImage is in markdown format ![alt](url)
+  // Check if coverImage is in markdown format ![alt](url) or HTML format <img src="...">
   if (coverImage) {
     const mdImageMatch = coverImage.match(/!\[.*?\]\((.*?)\)/);
+    const htmlImageMatch = coverImage.match(/<img.*?src=["'](.*?)["']/);
+
     if (mdImageMatch && mdImageMatch[1]) {
       coverImage = mdImageMatch[1];
+    } else if (htmlImageMatch && htmlImageMatch[1]) {
+      coverImage = htmlImageMatch[1];
     }
   }
   

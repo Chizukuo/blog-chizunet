@@ -1,15 +1,21 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
+import remarkGemoji from 'remark-gemoji';
+// @ts-ignore
+import remarkDefinitionList from 'remark-definition-list';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
 import { Copy, Check, Terminal, ChevronRight } from 'lucide-react';
 import { common, createLowlight } from 'lowlight';
+import mermaid from 'mermaid';
+import plantumlEncoder from 'plantuml-encoder';
+import { useTheme } from 'next-themes';
 import 'highlight.js/styles/github-dark.css';
 import 'katex/dist/katex.min.css';
 
@@ -118,10 +124,107 @@ interface MarkdownRendererProps {
   content: string;
 }
 
+import Image from 'next/image';
 import { useI18n } from '@/hooks/useI18n';
 import { translations } from '@/lib/translations';
 
-// ... existing imports ...
+const OPTIMIZED_DOMAINS = [
+  'github.com',
+  'avatars.githubusercontent.com',
+  'user-images.githubusercontent.com',
+  'private-user-images.githubusercontent.com',
+];
+
+const shouldOptimize = (url: string) => {
+  try {
+    if (!url) return false;
+    if (url.startsWith('/') || url.startsWith('data:')) return true;
+    const hostname = new URL(url).hostname;
+    return OPTIMIZED_DOMAINS.includes(hostname);
+  } catch {
+    return false;
+  }
+};
+
+const MermaidDiagram = ({ code }: { code: string }) => {
+  const [svg, setSvg] = useState('');
+  const [error, setError] = useState(false);
+  const { theme, systemTheme } = useTheme();
+  const mounted = useRef(false);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
+
+  useEffect(() => {
+    if (!mounted.current) return;
+
+    const currentTheme = theme === 'system' ? systemTheme : theme;
+    const mermaidTheme = currentTheme === 'dark' ? 'dark' : 'default';
+
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: mermaidTheme,
+      securityLevel: 'loose',
+      fontFamily: 'inherit',
+    });
+    
+    const renderDiagram = async () => {
+      try {
+        const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
+        const { svg } = await mermaid.render(id, code);
+        if (mounted.current) {
+          setSvg(svg);
+          setError(false);
+        }
+      } catch (e) {
+        console.error('Mermaid render error:', e);
+        if (mounted.current) {
+          setError(true);
+        }
+      }
+    };
+
+    renderDiagram();
+  }, [code, theme, systemTheme]);
+
+  if (error) return (
+    <div className="my-8 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
+      <p className="mb-2 font-bold">Mermaid Error:</p>
+      <pre className="overflow-x-auto text-xs">{code}</pre>
+    </div>
+  );
+  
+  if (!svg) return (
+    <div className="my-8 flex h-32 w-full animate-pulse items-center justify-center rounded-lg bg-cheese-100/50 dark:bg-stone-800/50">
+      <span className="text-sm text-cheese-600/50 dark:text-stone-500">Loading Diagram...</span>
+    </div>
+  );
+
+  return <div className="mermaid my-8 flex justify-center overflow-x-auto" dangerouslySetInnerHTML={{ __html: svg }} />;
+};
+
+const PlantUMLDiagram = ({ code }: { code: string }) => {
+  const [url, setUrl] = useState('');
+
+  useEffect(() => {
+    try {
+      const encoded = plantumlEncoder.encode(code.trim());
+      setUrl(`https://www.plantuml.com/plantuml/svg/${encoded}`);
+    } catch (e) {
+      console.error('PlantUML encode error:', e);
+    }
+  }, [code]);
+
+  if (!url) return null;
+
+  return (
+    <div className="my-8 flex justify-center overflow-x-auto bg-white p-4 dark:bg-white/5 rounded-lg border border-cheese-200/50 dark:border-stone-800/50">
+      <img src={url} alt="PlantUML Diagram" className="max-w-full h-auto dark:invert-[.85]" loading="lazy" />
+    </div>
+  );
+};
 
 const CodeBlock = ({ children, className }: { children: any, className?: string }) => {
   const [copied, setCopied] = useState(false);
@@ -202,14 +305,19 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         rehypePlugins={[
           rehypeRaw,
           rehypeSlug,
-          [rehypeHighlight, { 
+          [rehypeHighlight, {
             languages: allLanguages,
             detect: true,
             ignoreMissing: true
           }],
           rehypeKatex
         ]}
-        remarkPlugins={[remarkGfm, remarkMath]}
+        remarkPlugins={[
+          remarkGfm, 
+          remarkMath, 
+          remarkGemoji, 
+          remarkDefinitionList
+        ]}
         components={{
           h1: ({ node, ...props }) => <h1 {...props} className="scroll-mt-32 text-4xl font-black text-stone-900 dark:text-stone-50 mb-8 mt-12 tracking-tight" />,
           h2: ({ node, ...props }) => <h2 {...props} className="scroll-mt-32 text-3xl font-bold text-stone-800 dark:text-stone-100 mb-6 mt-10 tracking-tight border-b border-cheese-200/50 dark:border-stone-800/50 pb-2" />,
@@ -218,15 +326,36 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
           h5: ({ node, ...props }) => <h5 {...props} className="scroll-mt-32 text-lg font-bold text-stone-800 dark:text-stone-200 mb-2 mt-4" />,
           h6: ({ node, ...props }) => <h6 {...props} className="scroll-mt-32 text-base font-bold text-stone-800 dark:text-stone-200 mb-2 mt-4 uppercase tracking-wider" />,
           p: ({ node, ...props }) => <p {...props} className="mb-6 leading-relaxed text-stone-700 dark:text-stone-300" />,
-          ul: ({ node, ...props }) => <ul {...props} className="my-6 ml-6 list-disc marker:text-cheese-500 dark:marker:text-cheese-600 space-y-2 text-stone-700 dark:text-stone-300" />,
-          ol: ({ node, ...props }) => <ol {...props} className="my-6 ml-6 list-decimal marker:text-cheese-500 dark:marker:text-cheese-600 space-y-2 font-medium text-stone-700 dark:text-stone-300" />,
-          li: ({ node, ...props }) => <li {...props} className="pl-2" />,
+          ul: ({ node, className, ...props }) => (
+            <ul 
+              {...props} 
+              className={`my-6 space-y-2 text-stone-700 dark:text-stone-300 ${
+                className?.includes('contains-task-list') 
+                  ? 'list-none ml-0' 
+                  : 'ml-6 list-disc marker:text-cheese-500 dark:marker:text-cheese-600'
+              } ${className || ''}`} 
+            />
+          ),
+          ol: ({ node, className, ...props }) => (
+            <ol 
+              {...props} 
+              className={`my-6 space-y-2 font-medium text-stone-700 dark:text-stone-300 ${
+                className?.includes('contains-task-list') 
+                  ? 'list-none ml-0' 
+                  : 'ml-6 list-decimal marker:text-cheese-500 dark:marker:text-cheese-600'
+              } ${className || ''}`} 
+            />
+          ),
+          li: ({ node, className, ...props }) => (
+            <li 
+              {...props} 
+              className={`${className || ''} ${className?.includes('task-list-item') ? '' : 'pl-2'}`}
+            />
+          ),
           hr: ({ node, ...props }) => <hr {...props} className="my-12 border-stone-300 dark:border-stone-700" />,
           strong: ({ node, ...props }) => <strong {...props} className="font-bold text-stone-900 dark:text-stone-50" />,
           a: ({ node, ...props }) => {
-            // Check if it's an internal anchor link
             const isAnchor = props.href?.startsWith('#');
-            // Check if it's a relative link (internal)
             const isRelative = props.href?.startsWith('/');
             
             const linkProps = (isAnchor || isRelative)
@@ -241,20 +370,35 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
               />
             );
           },
-          img: ({ node, ...props }) => (
-            <span className="block my-8">
-              <img 
-                {...props} 
-                className="rounded-3xl border border-cheese-200/50 dark:border-stone-800/50 shadow-xl mx-auto max-w-full h-auto" 
-                loading="lazy"
-              />
-              {props.alt && (
-                <span className="block text-center text-sm text-stone-500 dark:text-stone-400 mt-3 font-medium italic">
-                  {props.alt}
-                </span>
-              )}
-            </span>
-          ),
+          img: ({ node, ...props }) => {
+            const isOptimized = shouldOptimize(props.src as string);
+            
+            return (
+              <span className="block my-8">
+                {isOptimized ? (
+                  <Image
+                    src={props.src as string}
+                    alt={props.alt || ''}
+                    width={0}
+                    height={0}
+                    sizes="100vw"
+                    className="rounded-3xl border border-cheese-200/50 dark:border-stone-800/50 shadow-xl mx-auto w-full h-auto"
+                  />
+                ) : (
+                  <img 
+                    {...props} 
+                    className="rounded-3xl border border-cheese-200/50 dark:border-stone-800/50 shadow-xl mx-auto max-w-full h-auto" 
+                    loading="lazy"
+                  />
+                )}
+                {props.alt && (
+                  <span className="block text-center text-sm text-stone-500 dark:text-stone-400 mt-3 font-medium italic">
+                    {props.alt}
+                  </span>
+                )}
+              </span>
+            );
+          },
           blockquote: ({ node, ...props }) => (
             <blockquote {...props} className="border-l-4 border-cheese-500 bg-cheese-50/50 dark:bg-stone-800/30 px-6 py-4 rounded-r-xl italic not-italic text-stone-700 dark:text-stone-300 shadow-sm my-6" />
           ),
@@ -296,33 +440,46 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
               </span>
             </summary>
           ),
-          code: ({ node, className, children, ...props }: any) => {
+          code: ({ node, inline, className, children, ...props }: any) => {
             const match = /language-(\w+)/.exec(className || '');
-            const isInline = !match;
+            const language = match ? match[1] : '';
             
-            if (isInline) {
+            if (inline || !match) {
               return (
                 <code className="bg-cheese-100 dark:bg-stone-800 text-pink-600 dark:text-pink-400 px-1.5 py-0.5 rounded-md text-sm font-medium font-mono" {...props}>
                   {children}
                 </code>
               );
             }
+
+            if (language === 'mermaid') {
+              return <MermaidDiagram code={String(children).replace(/\n$/, '')} />;
+            }
+            
+            if (language === 'plantuml') {
+               return <PlantUMLDiagram code={String(children).replace(/\n$/, '')} />;
+            }
+
             return <CodeBlock className={className}>{children}</CodeBlock>;
           },
-          // Custom checkbox rendering
           input: ({ node, ...props }) => {
             if (props.type === 'checkbox') {
               return (
                 <input 
                   {...props} 
-                  disabled={false}
+                  disabled={true}
                   readOnly
                   className="checkbox-custom"
                 />
               );
             }
             return <input {...props} />;
-          }
+          },
+          dl: ({ node, ...props }) => <dl {...props} className="my-6 space-y-4" />,
+          dt: ({ node, ...props }) => <dt {...props} className="font-bold text-stone-900 dark:text-stone-50 mt-4 first:mt-0" />,
+          dd: ({ node, ...props }) => <dd {...props} className="pl-6 text-stone-700 dark:text-stone-300" />,
+          sup: ({ node, ...props }) => <sup {...props} className="text-xs align-super" />,
+          sub: ({ node, ...props }) => <sub {...props} className="text-xs align-sub" />,
         }}
       >
         {content}

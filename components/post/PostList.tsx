@@ -68,7 +68,7 @@ export default function PostList({ initialPosts }: PostListProps) {
         </motion.p>
       </section>
 
-      <section className="grid gap-6 sm:gap-8 md:grid-cols-2 relative min-h-[400px]">
+      <section className="grid gap-6 sm:gap-8 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 relative min-h-[400px]">
         <AnimatePresence mode="wait">
           {loading ? (
             <motion.div

@@ -2,6 +2,7 @@ import { getPosts } from "@/lib/github";
 import PostList from "@/components/post/PostList";
 import { translations } from "@/lib/translations";
 import { Metadata } from "next";
+import SchemaOrg from "@/components/seo/SchemaOrg";
 
 export const revalidate = 60;
 
@@ -53,9 +54,20 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   const initialPosts = await getPosts('zh');
+  const t = translations['zh'];
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": `Chizunet Blog | ${t.title}`,
+    "description": t.description,
+    "url": "https://blog.chizunet.cc",
+    "inLanguage": "zh",
+  };
 
   return (
     <div className="relative">
+      <SchemaOrg schema={jsonLd} />
       <div className="relative z-10 pt-20">
         <PostList initialPosts={initialPosts} />
       </div>

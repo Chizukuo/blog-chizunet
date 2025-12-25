@@ -3,6 +3,7 @@ import PostList from "@/components/post/PostList";
 import { Locale } from "@/types";
 import { translations } from "@/lib/translations";
 import { Metadata } from "next";
+import SchemaOrg from "@/components/seo/SchemaOrg";
 
 interface PageProps {
   params: {
@@ -69,9 +70,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function Home({ params }: PageProps) {
   const initialPosts = await getPosts(params.lang);
+  const t = translations[params.lang];
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": `Chizunet Blog | ${t.title}`,
+    "description": t.description,
+    "url": `https://blog.chizunet.cc/${params.lang}`,
+    "inLanguage": params.lang,
+  };
 
   return (
     <div className="relative">
+      <SchemaOrg schema={jsonLd} />
       <div className="relative z-10 pt-20">
         <PostList initialPosts={initialPosts} />
       </div>

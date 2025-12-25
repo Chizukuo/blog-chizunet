@@ -12,6 +12,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
+      alternates: {
+        languages: {
+          zh: `${baseUrl}/zh`,
+          en: `${baseUrl}/en`,
+          ja: `${baseUrl}/ja`,
+        },
+      },
     }
   ];
 
@@ -22,6 +29,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,
+      alternates: {
+        languages: {
+          zh: `${baseUrl}/zh`,
+          en: `${baseUrl}/en`,
+          ja: `${baseUrl}/ja`,
+        },
+      },
     });
 
     // Add posts for this language
@@ -31,6 +45,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(post.updated_at),
       changeFrequency: 'weekly' as const,
       priority: 0.7,
+      alternates: {
+        languages: {
+          zh: `${baseUrl}/zh/${post.slug}`,
+          en: `${baseUrl}/en/${post.slug}`,
+          ja: `${baseUrl}/ja/${post.slug}`,
+        },
+      },
     }));
     
     sitemapList.push(...postUrls);

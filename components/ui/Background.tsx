@@ -6,7 +6,7 @@ import CheeseHole from './CheeseHole';
 
 export default function Background() {
   const pathname = usePathname();
-  const isHome = pathname === '/';
+  const isHome = pathname === '/' || ['/en', '/ja', '/zh'].includes(pathname);
 
   // Define positions for Home and Post pages
   // We can use variants to animate between them

@@ -1,4 +1,5 @@
-:root {
+/*! Custom Giscus Theme - Cheese Light */
+main {
   --color-prettylights-syntax-comment: #8b949e;
   --color-prettylights-syntax-constant: #79c0ff;
   --color-prettylights-syntax-entity: #d2a8ff;
@@ -29,102 +30,201 @@
   --color-prettylights-syntax-brackethighlighter-angle: #8b949e;
   --color-prettylights-syntax-sublimelinter-gutter-mark: #484f58;
   --color-prettylights-syntax-constant-other-reference-link: #a5d6ff;
-  --color-btn-text: #c9d1d9;
-  --color-btn-bg: #21262d;
-  --color-btn-border: #30363d;
-  --color-btn-shadow: 0 0 transparent;
-  --color-btn-inset-shadow: 0 0 transparent;
-  --color-btn-hover-bg: #30363d;
-  --color-btn-hover-border: #8b949e;
-  --color-btn-active-bg: #282e33;
-  --color-btn-selected-bg: #161b22;
-  --color-btn-primary-text: #ffffff;
-  --color-btn-primary-bg: #238636;
-  --color-btn-primary-border: rgba(240, 246, 252, 0.1);
-  --color-btn-primary-shadow: 0 0 transparent;
-  --color-btn-primary-inset-shadow: 0 0 transparent;
-  --color-btn-primary-hover-bg: #2ea043;
-  --color-btn-primary-hover-border: rgba(240, 246, 252, 0.1);
-  --color-btn-primary-selected-bg: #238636;
-  --color-fg-default: #adbac7;
-  --color-fg-muted: #768390;
-  --color-fg-subtle: #545d68;
+
+  /* Base Variables */
+  --color-btn-text: #4E342E; /* cheese-950 */
+  --color-btn-bg: #FFF8E1; /* cheese-100 */
+  --color-btn-border: #FFECB3; /* cheese-200 */
+  --color-btn-shadow: 0 1px 0 rgba(27, 31, 35, 0.04);
+  --color-btn-inset-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  --color-btn-hover-bg: #FFE082; /* cheese-300 */
+  --color-btn-hover-border: #FFD54F; /* cheese-400 */
+  --color-btn-active-bg: #FFD54F; /* cheese-400 */
+  --color-btn-selected-bg: #FFD54F;
+  
+  --color-btn-primary-text: #4E342E; /* cheese-950 */
+  --color-btn-primary-bg: #FFCA28; /* cheese-500 */
+  --color-btn-primary-border: #FFB300; /* cheese-600 */
+  --color-btn-primary-shadow: 0 1px 0 rgba(27, 31, 35, 0.1);
+  --color-btn-primary-inset-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  --color-btn-primary-hover-bg: #FFB300; /* cheese-600 */
+  --color-btn-primary-hover-border: #FFA000; /* cheese-700 */
+  --color-btn-primary-selected-bg: #FFB300; /* cheese-600 */
+
+  --color-fg-default: #4E342E; /* cheese-950 */
+  --color-fg-muted: #8c7365; /* muted brown */
+  --color-fg-subtle: #a18e84;
+  
   --color-canvas-default: transparent;
-  --color-canvas-overlay: #1e252e;
-  --color-canvas-inset: #151b23;
-  --color-canvas-subtle: #1e252e;
-  --color-border-default: #444c56;
-  --color-border-muted: #444c56;
-  --color-neutral-muted: rgba(110, 118, 129, 0.4);
-  --color-accent-fg: #539bf5;
-  --color-accent-emphasis: #316dca;
-  --color-accent-muted: rgba(65, 132, 228, 0.4);
-  --color-accent-subtle: rgba(56, 139, 253, 0.15);
-  --color-success-fg: #57ab5a;
-  --color-attention-fg: #c69026;
-  --color-danger-fg: #e5534b;
-  --color-danger-emphasis: #c93c37;
-  --color-danger-muted: rgba(229, 83, 75, 0.4);
-  --color-danger-subtle: rgba(229, 83, 75, 0.15);
-  --color-primer-shadow-inset: 0 0 transparent;
-  --color-primer-shadow-focus: 0 0 0 3px #1f6feb;
-  --color-scale-gray-7: #21262d;
-  --color-scale-blue-8: #0d419d;
+  --color-canvas-overlay: #FFFDF5; /* cheese-50 */
+  --color-canvas-inset: #FFF8E1; /* cheese-100 */
+  --color-canvas-subtle: #FFFDF5; /* cheese-50 */
+  
+  --color-border-default: #FFECB3; /* cheese-200 */
+  --color-border-muted: #FFF8E1; /* cheese-100 */
+  
+  --color-neutral-muted: rgba(175, 184, 193, 0.2);
+  --color-accent-fg: #FF8F00; /* cheese-800 */
+  --color-accent-emphasis: #FF6F00; /* cheese-900 */
+  --color-accent-muted: rgba(255, 143, 0, 0.4);
+  --color-accent-subtle: rgba(255, 143, 0, 0.15);
+  
+  --color-success-fg: #2da44e;
+  --color-attention-fg: #bf8700;
+  --color-danger-fg: #cf222e;
+  --color-danger-emphasis: #cf222e;
+  --color-danger-muted: rgba(207, 34, 46, 0.4);
+  --color-danger-subtle: rgba(207, 34, 46, 0.15);
+  
+  --color-primer-shadow-inset: inset 0 1px 0 rgba(208, 215, 222, 0.2);
+  --color-primer-shadow-focus: 0 0 0 3px rgba(255, 202, 40, 0.3); /* cheese-500 ring */
+  
+  --color-scale-gray-1: #eaeef2;
+  --color-scale-blue-1: #b6e3ff;
 
   /*! Extensions from @primer/css/alerts/flash.scss */
-  --color-social-reaction-bg-hover: var(--color-scale-gray-7);
-  --color-social-reaction-bg-reacted-hover: var(--color-scale-blue-8);
-}
-
-main {
+  --color-social-reaction-bg-hover: #FFF8E1; /* cheese-100 */
+  --color-social-reaction-bg-reacted-hover: #FFE082; /* cheese-300 */
+  
   font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
-/* Glass/Cheese Effect */
+/* Main Container */
 .gsc-main {
-    background: transparent;
+  background: transparent;
+  padding-bottom: 2rem;
 }
 
+/* Comment Input Box */
 .gsc-comment-box {
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: 1rem;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  border-radius: 1.5rem;
+  border: 1px solid #FFECB3; /* cheese-200 */
+  box-shadow: 0 4px 20px -2px rgba(255, 202, 40, 0.1); /* cheese shadow */
 }
 
-.gsc-header {
-    background: transparent;
+.gsc-comment-box:focus-within {
+  border-color: #FFCA28; /* cheese-500 */
+  box-shadow: 0 0 0 3px rgba(255, 202, 40, 0.2);
 }
 
+.gsc-comment-box-tabs .gsc-comment-box-tab.is-selected {
+    color: #4E342E; /* cheese-950 */
+    background-color: transparent;
+    border-bottom: 2px solid #FFCA28; /* cheese-500 */
+}
+
+/* Individual Comments */
 .gsc-comment {
-    background: rgba(255, 255, 255, 0.6);
-    border-radius: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    margin-bottom: 1rem;
+  background: rgba(255, 253, 245, 0.7); /* cheese-50 */
+  backdrop-filter: blur(8px);
+  border-radius: 1.5rem;
+  border: 1px solid #FFF8E1; /* cheese-100 */
+  box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.02);
+  margin-bottom: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.gsc-comment:hover {
+  border-color: #FFECB3; /* cheese-200 */
+  box-shadow: 0 4px 12px -2px rgba(255, 202, 40, 0.15);
+  transform: translateY(-1px);
 }
 
 .gsc-comment-header {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 1rem 1rem 0 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 248, 225, 0.5); /* cheese-100 */
+  border-radius: 1.5rem 1.5rem 0 0;
+  border-bottom: 1px solid #FFECB3; /* cheese-200 */
+  padding: 1rem 1.25rem;
 }
 
-/* Dark mode overrides would be handled by Giscus loading a different theme URL or using data-theme="preferred_color_scheme" pointing to a dark css */
-/* Since we have one file, we can try using media queries if Giscus supports it, or we rely on the user to pass different CSS URLs */
-/* But here we just set base styles. */
+.gsc-comment-author {
+  font-weight: 700;
+  color: #4E342E; /* cheese-950 */
+}
+
+.gsc-comment-content {
+  padding: 1rem 1.25rem;
+}
 
 .gsc-reply-content {
-    background: transparent;
+  background: transparent;
 }
 
-button {
-    border-radius: 0.75rem;
-    font-weight: 600;
-    transition: all 0.2s;
+/* Buttons */
+.btn-primary {
+  background-color: #FFCA28; /* cheese-500 */
+  border: 1px solid #FFB300; /* cheese-600 */
+  color: #4E342E; /* cheese-950 */
+  border-radius: 1rem;
+  font-weight: 700;
+  transition: all 0.2s cubic-bezier(0.3, 0, 0.5, 1);
 }
 
+.btn-primary:hover {
+  background-color: #FFB300; /* cheese-600 */
+  border-color: #FFA000; /* cheese-700 */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 179, 0, 0.3);
+}
+
+.btn {
+  border-radius: 1rem;
+  transition: all 0.2s;
+}
+
+/* Reactions */
 .gsc-social-reaction-summary-item {
-    border-radius: 0.5rem;
-    border: 1px solid transparent;
+  border-radius: 999px;
+  border: 1px solid #FFECB3; /* cheese-200 */
+  background-color: #FFFDF5; /* cheese-50 */
+  transition: all 0.2s;
+}
+
+.gsc-social-reaction-summary-item:hover {
+  background-color: #FFF8E1; /* cheese-100 */
+  border-color: #FFD54F; /* cheese-400 */
+  transform: scale(1.05);
+}
+
+.gsc-social-reaction-summary-item.has-reacted {
+  background-color: #FFECB3; /* cheese-200 */
+  border-color: #FFCA28; /* cheese-500 */
+  color: #4E342E;
+}
+
+/* Links */
+a {
+  color: #FF8F00; /* cheese-800 */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  color: #FF6F00; /* cheese-900 */
+  text-decoration: underline;
+  text-decoration-color: #FFCA28; /* cheese-500 */
+}
+
+/* Code Blocks */
+.gsc-comment-content pre {
+  background-color: #FFF8E1 !important; /* cheese-100 */
+  border-radius: 0.75rem;
+  border: 1px solid #FFECB3; /* cheese-200 */
+}
+
+.gsc-comment-content code {
+  background-color: rgba(255, 236, 179, 0.4); /* cheese-200 */
+  padding: 0.2em 0.4em;
+  border-radius: 0.3em;
+}
+
+/* Separator */
+.gsc-timeline-item-icon {
+  color: #FFD54F; /* cheese-400 */
+}
+
+.gsc-timeline-item-connector {
+  background-color: #FFECB3; /* cheese-200 */
 }

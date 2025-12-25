@@ -5,8 +5,9 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { useI18n } from '@/hooks/useI18n';
 import { translations } from '@/lib/translations';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
+import CheeseHole from '@/components/ui/CheeseHole';
 
 interface GiscusCommentsProps {
   slug?: string;
@@ -42,23 +43,43 @@ export default function GiscusComments({ slug }: GiscusCommentsProps) {
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
-      className="mt-20 mb-24"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.6 }}
+      className="mt-24 mb-32 relative"
     >
-      <div className="space-y-8">
-        <div className="flex items-center gap-3 px-2">
-          <div className="p-2 bg-cheese-500/10 dark:bg-cheese-500/20 rounded-xl">
-            <MessageSquare className="w-5 h-5 text-cheese-600 dark:text-cheese-400" />
+      {/* Decorative Cheese Holes */}
+      <div className="absolute -top-10 -right-10 w-32 h-32 opacity-50 hidden md:block pointer-events-none select-none">
+        <CheeseHole className="w-full h-full" delay={0.5} />
+      </div>
+      <div className="absolute -bottom-8 -left-8 w-24 h-24 opacity-40 hidden md:block pointer-events-none select-none">
+        <CheeseHole className="w-full h-full" delay={1.2} />
+      </div>
+
+      <div className="space-y-8 relative z-10">
+        <div className="flex items-center gap-4 px-2">
+          <div className="relative group">
+            <div className="absolute inset-0 bg-cheese-400 blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-300 rounded-full"></div>
+            <div className="relative p-3 bg-gradient-to-br from-cheese-100 to-cheese-50 dark:from-stone-800 dark:to-stone-900 rounded-2xl border border-cheese-200 dark:border-stone-700 shadow-sm group-hover:scale-110 transition-transform duration-300">
+              <MessageSquare className="w-6 h-6 text-cheese-600 dark:text-cheese-400" />
+            </div>
           </div>
-          <h3 className="text-2xl font-black text-cheese-950 dark:text-cheese-50 tracking-tight">
-            {t.comments}
-          </h3>
-          <div className="h-px flex-grow bg-gradient-to-r from-cheese-200/50 to-transparent dark:from-stone-800/50 ml-4"></div>
+          
+          <div className="flex flex-col">
+            <h3 className="text-3xl font-black text-cheese-950 dark:text-cheese-50 tracking-tight flex items-center gap-2">
+              {t.comments}
+              <Sparkles className="w-5 h-5 text-cheese-400 animate-pulse" />
+            </h3>
+            <p className="text-sm text-cheese-800/60 dark:text-stone-400 font-medium">
+              Join the conversation
+            </p>
+          </div>
+          
+          <div className="h-px flex-grow bg-gradient-to-r from-cheese-300/30 via-cheese-200/20 to-transparent dark:from-stone-700/50 dark:via-stone-800/20 ml-6 rounded-full"></div>
         </div>
         
-        <div className="glass-panel rounded-[2.5rem] p-1 md:p-4 overflow-hidden">
+        <div className="glass-panel rounded-[2.5rem] p-2 md:p-6 shadow-xl shadow-cheese-500/5 dark:shadow-black/20 border-cheese-200/50 dark:border-stone-700/50">
           <Giscus
             key={`${locale}-${resolvedTheme}-${slug}`}
             id="comments"

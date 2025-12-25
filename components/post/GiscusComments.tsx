@@ -49,11 +49,11 @@ export default function GiscusComments({ slug }: GiscusCommentsProps) {
       transition={{ duration: 0.6 }}
       className="mt-24 mb-32 relative"
     >
-      {/* Decorative Cheese Holes */}
-      <div className="absolute -top-10 -right-10 w-32 h-32 opacity-50 hidden md:block pointer-events-none select-none">
+      {/* Decorative Cheese Holes - Softened */}
+      <div className="absolute -top-16 -right-16 w-48 h-48 opacity-80 dark:opacity-40 blur-2xl pointer-events-none select-none">
         <CheeseHole className="w-full h-full" delay={0.5} />
       </div>
-      <div className="absolute -bottom-8 -left-8 w-24 h-24 opacity-40 hidden md:block pointer-events-none select-none">
+      <div className="absolute -bottom-12 -left-12 w-36 h-36 opacity-70 dark:opacity-30 blur-xl pointer-events-none select-none">
         <CheeseHole className="w-full h-full" delay={1.2} />
       </div>
 
@@ -79,23 +79,25 @@ export default function GiscusComments({ slug }: GiscusCommentsProps) {
           <div className="h-px flex-grow bg-gradient-to-r from-cheese-300/30 via-cheese-200/20 to-transparent dark:from-stone-700/50 dark:via-stone-800/20 ml-6 rounded-full"></div>
         </div>
         
-        <div className="glass-panel rounded-[2.5rem] p-2 md:p-6 shadow-xl shadow-cheese-500/5 dark:shadow-black/20 border-cheese-200/50 dark:border-stone-700/50">
-          <Giscus
-            key={`${locale}-${resolvedTheme}-${slug}`}
-            id="comments"
-            repo={process.env.NEXT_PUBLIC_GISCUS_REPO as any}
-            repoId={process.env.NEXT_PUBLIC_GISCUS_REPO_ID as string}
-            category={process.env.NEXT_PUBLIC_GISCUS_CATEGORY}
-            categoryId={process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID as string}
-            mapping={mapping}
-            term={term}
-            reactionsEnabled="1"
-            emitMetadata="0"
-            inputPosition="top"
-            theme={themeUrl}
-            lang={giscusLang}
-            loading="lazy"
-          />
+        <div className="glass-panel rounded-[2rem] p-4 sm:p-6 md:p-8 shadow-2xl shadow-cheese-500/10 dark:shadow-black/20 border-cheese-200/60 dark:border-stone-700/50 overflow-hidden min-h-[300px]">
+          <div className="w-full min-w-0">
+            <Giscus
+              key={`${locale}-${resolvedTheme}-${slug}`}
+              id="comments"
+              repo={process.env.NEXT_PUBLIC_GISCUS_REPO as any}
+              repoId={process.env.NEXT_PUBLIC_GISCUS_REPO_ID as string}
+              category={process.env.NEXT_PUBLIC_GISCUS_CATEGORY}
+              categoryId={process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID as string}
+              mapping={mapping}
+              term={term}
+              reactionsEnabled="1"
+              emitMetadata="0"
+              inputPosition="top"
+              theme={themeUrl}
+              lang={giscusLang}
+              loading="lazy"
+            />
+          </div>
         </div>
       </div>
     </motion.div>

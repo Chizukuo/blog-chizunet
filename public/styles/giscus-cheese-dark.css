@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
 /*! Custom Giscus Theme - Cheese Dark */
 main {
   --color-prettylights-syntax-comment: #8b949e;
@@ -82,10 +84,33 @@ main {
   font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #0c0a09; /* stone-950 */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #292524; /* stone-800 */
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #44403c; /* stone-700 */
+}
+
 /* Main Container */
 .gsc-main {
   background: transparent;
   padding-bottom: 2rem;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Comment Input Box */

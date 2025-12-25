@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { format } from 'date-fns';
 import { zhCN, enUS, ja } from 'date-fns/locale';
 import { Post } from '@/types';
@@ -25,6 +26,23 @@ export default function PostCard({ post }: PostCardProps) {
     ja: ja,
   };
 
+  const OPTIMIZED_DOMAINS = [
+    'github.com',
+    'avatars.githubusercontent.com',
+    'user-images.githubusercontent.com',
+    'private-user-images.githubusercontent.com',
+  ];
+
+  const shouldOptimize = (url: string) => {
+    try {
+      if (url.startsWith('/') || url.startsWith('data:')) return true; // Always optimize local/data images
+      const hostname = new URL(url).hostname;
+      return OPTIMIZED_DOMAINS.includes(hostname);
+    } catch {
+      return false;
+    }
+  };
+
   return (
     <motion.div
       whileHover={reduceMotion ? undefined : { y: -8, scale: 1.02 }}
@@ -36,13 +54,16 @@ export default function PostCard({ post }: PostCardProps) {
           <div className="relative z-10 flex flex-col h-full">
             {post.coverImage && (
               <div className="mb-6 -mx-5 sm:-mx-8 -mt-5 sm:-mt-8 relative h-48 sm:h-64 overflow-hidden shadow-sm">
-                <img 
-                  src={post.coverImage} 
+                <Image
+                  src={post.coverImage}
                   alt={post.title}
-                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-theme-spring"
-                  loading="lazy"
+                  fill
+                  className="object-cover transform group-hover:scale-105 transition-transform duration-700 ease-theme-spring"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  priority={false}
+                  unoptimized={!shouldOptimize(post.coverImage)}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
               </div>
             )}
 

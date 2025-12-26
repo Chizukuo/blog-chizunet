@@ -84,13 +84,15 @@ const config: Config = {
             lineHeight: '1.8',
             a: {
               color: theme('colors.cheese.800'),
-              textDecoration: 'none',
-              borderBottom: `2px solid ${theme('colors.cheese.200')}`,
+              textDecoration: 'underline',
+              textDecorationThickness: 'from-font',
+              textUnderlineOffset: '2px',
+              textDecorationColor: theme('colors.cheese.200'),
               transition: 'all 0.2s ease',
               '&:hover': {
                 color: theme('colors.cheese.600'),
                 backgroundColor: theme('colors.cheese.100'),
-                borderBottomColor: theme('colors.cheese.500'),
+                textDecorationColor: theme('colors.cheese.500'),
               },
             },
             'h1, h2, h3, h4': {
@@ -125,11 +127,14 @@ const config: Config = {
             color: theme('colors.stone.300'),
             a: {
               color: theme('colors.cheese.400'),
-              borderBottomColor: theme('colors.cheese.900'),
+              textDecoration: 'underline',
+              textDecorationThickness: 'from-font',
+              textUnderlineOffset: '2px',
+              textDecorationColor: theme('colors.cheese.900'),
               '&:hover': {
                 color: theme('colors.cheese.300'),
                 backgroundColor: theme('colors.cheese.950'),
-                borderBottomColor: theme('colors.cheese.400'),
+                textDecorationColor: theme('colors.cheese.400'),
               },
             },
             'h1, h2, h3, h4': {

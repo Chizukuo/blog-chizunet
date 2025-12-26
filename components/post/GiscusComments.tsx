@@ -50,10 +50,10 @@ export default function GiscusComments({ slug }: GiscusCommentsProps) {
       className="mt-24 mb-32 relative"
     >
       {/* Decorative Cheese Holes - Softened */}
-      <div className="absolute -top-16 -right-16 w-48 h-48 opacity-80 dark:opacity-40 blur-2xl pointer-events-none select-none">
+      <div className="hidden sm:block absolute -top-16 -right-16 w-48 h-48 opacity-80 dark:opacity-40 blur-2xl pointer-events-none select-none">
         <CheeseHole className="w-full h-full" delay={0.5} />
       </div>
-      <div className="absolute -bottom-12 -left-12 w-36 h-36 opacity-70 dark:opacity-30 blur-xl pointer-events-none select-none">
+      <div className="hidden sm:block absolute -bottom-12 -left-12 w-36 h-36 opacity-70 dark:opacity-30 blur-xl pointer-events-none select-none">
         <CheeseHole className="w-full h-full" delay={1.2} />
       </div>
 

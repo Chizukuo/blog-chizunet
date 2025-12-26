@@ -7,6 +7,8 @@ html {
   scroll-padding-top: 8rem; /* Ensure scroll padding for anchor links */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* Ensure all elements with IDs have proper scroll margin */
@@ -221,4 +223,48 @@ p {
 :lang(en) p {
   hyphens: auto;
   -webkit-hyphens: auto;
+}
+
+/* ----------------------------- */
+/* Footnotes styling + iOS emoji fix */
+/* ----------------------------- */
+
+/* 修复脚注样式 */
+.prose .footnotes {
+  @apply mt-12 pt-8 border-t border-cheese-200/60 dark:border-stone-800 text-sm;
+}
+
+.prose .footnotes ol {
+  @apply list-decimal list-outside ml-6;
+}
+
+.prose .footnotes li {
+  @apply pl-2 text-stone-600 dark:text-stone-400;
+}
+
+/* 【关键修复】针对 iOS 脚注返回链接的 Emoji 去除 */
+.prose .footnotes a[data-footnote-backref],
+.prose .footnotes a[href^="#fnref"] {
+  @apply no-underline opacity-50 hover:opacity-100 transition-opacity ml-1 align-middle inline-block;
+  /* 隐藏原始文本（保留可访问性），使用伪元素渲染单色箭头，避免 iOS 彩色 emoji */
+  color: transparent;
+  position: relative;
+  padding-left: 0.25rem;
+  text-decoration: none;
+}
+
+.prose .footnotes a[data-footnote-backref]::after,
+.prose .footnotes a[href^="#fnref"]::after {
+  content: '↩';
+  color: var(--tw-prose-links);
+  display: inline-block;
+  font-family: "Segoe UI Symbol", "Apple Symbols", "Noto Sans Symbols", system-ui, -apple-system, sans-serif;
+  font-weight: 600;
+  font-size: 0.95em;
+  line-height: 1;
+}
+
+.dark .prose .footnotes a[data-footnote-backref]::after,
+.dark .prose .footnotes a[href^="#fnref"]::after {
+  color: #FFD54F;
 }

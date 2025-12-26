@@ -94,7 +94,7 @@ export default function RootLayout({
             speed={200}
             shadow="0 0 10px #FFCA28,0 0 5px #FFCA28"
           />
-          <div className="min-h-screen flex flex-col bg-cheese-50 dark:bg-[#0c0a09] text-cheese-950 dark:text-stone-200 transition-all duration-700 ease-theme-spring relative">
+          <div className="w-full overflow-x-hidden min-h-screen flex flex-col bg-cheese-50 dark:bg-[#0c0a09] text-cheese-950 dark:text-stone-200 transition-all duration-700 ease-theme-spring relative">
             <Background />
             <Navbar />
             <main className="flex-grow mx-auto w-full max-w-[120rem] px-0 sm:px-6 lg:px-8 py-8 relative z-10">

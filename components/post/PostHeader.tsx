@@ -42,7 +42,7 @@ export default function PostHeader({ post }: PostHeaderProps) {
   };
 
   return (
-    <header className="mb-8 sm:mb-12 space-y-4 sm:space-y-6 notranslate px-4 sm:px-0">
+    <header className="w-full overflow-hidden mb-8 sm:mb-12 space-y-4 sm:space-y-6 notranslate px-4 sm:px-0">
       <Link 
         href="/" 
         className="inline-flex items-center gap-2 text-cheese-600 dark:text-cheese-400 font-bold hover:gap-3 transition-all"

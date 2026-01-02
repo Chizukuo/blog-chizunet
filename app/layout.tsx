@@ -17,11 +17,12 @@ export const metadata: Metadata = {
     default: "Chizunet Blog",
     template: "%s | Chizunet Blog"
   },
-  description: "A minimalist technical blog powered by GitHub Issues, exploring computer science, design, and technology.",
+  description: "A space where logic meets life. Documenting technology, art, and the resonance between them.",
   keywords: ["Blog", "Technology", "Computer Science", "Design", "GitHub Issues CMS", "Next.js", "React", "TypeScript"],
   authors: [{ name: "Chizukuo", url: "https://github.com/Chizukuo" }],
   creator: "Chizukuo",
   publisher: "Chizukuo",
+  category: "technology",
   formatDetection: {
     email: false,
     address: false,
@@ -68,6 +69,10 @@ export const viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#FFFBEB' },
+    { media: '(prefers-color-scheme: dark)', color: '#0c0a09' },
+  ],
 };
 
 export default function RootLayout({
@@ -94,7 +99,7 @@ export default function RootLayout({
             speed={200}
             shadow="0 0 10px #FFCA28,0 0 5px #FFCA28"
           />
-          <div className="w-full overflow-x-hidden min-h-screen flex flex-col bg-cheese-50 dark:bg-[#0c0a09] text-cheese-950 dark:text-stone-200 transition-all duration-700 ease-theme-spring relative">
+          <div className="w-full min-h-screen flex flex-col bg-cheese-50 dark:bg-[#0c0a09] text-cheese-950 dark:text-stone-200 transition-all duration-700 ease-theme-spring relative">
             <Background />
             <Navbar />
             <main className="flex-grow mx-auto w-full max-w-[120rem] px-0 sm:px-6 lg:px-8 py-8 relative z-10">

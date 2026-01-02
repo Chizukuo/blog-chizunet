@@ -13,6 +13,9 @@ interface PostHeaderProps {
   post: Post;
 }
 
+/**
+ * 文章头部组件，展示标题、作者、日期等元数据
+ */
 export default function PostHeader({ post }: PostHeaderProps) {
   const { locale, _hasHydrated } = useI18n();
   const currentLocale = _hasHydrated ? locale : 'zh';
@@ -33,7 +36,7 @@ export default function PostHeader({ post }: PostHeaderProps) {
 
   const shouldOptimize = (url: string) => {
     try {
-      if (url.startsWith('/') || url.startsWith('data:')) return true; // Always optimize local/data images
+      if (url.startsWith('/') || url.startsWith('data:')) return true;
       const hostname = new URL(url).hostname;
       return OPTIMIZED_DOMAINS.includes(hostname);
     } catch {
@@ -84,7 +87,7 @@ export default function PostHeader({ post }: PostHeaderProps) {
       </div>
 
       {post.coverImage && (
-        <div className="mt-8 sm:mt-12 relative w-full aspect-video sm:aspect-[2/1] rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-xl border border-cheese-200/50 dark:border-stone-800/50 group">
+        <div className="mt-8 sm:mt-12 relative w-full aspect-video sm:aspect-[2/1] rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden group">
           <Image
             src={post.coverImage}
             alt={post.title}

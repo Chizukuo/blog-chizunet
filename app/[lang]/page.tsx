@@ -32,12 +32,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       template: `%s | Chizunet Blog`
     },
     description: t.description,
-    keywords: ["Blog", "Technology", "Computer Science", "Design", "GitHub Issues CMS", "Next.js", "React", "TypeScript", t.blog],
+    keywords: [
+      "Chizunet", "Blog", "Technology", "Tutorials", "Life", "Performance",
+      "Computer Science", "Design", "GitHub Issues CMS", "Next.js", "React", "TypeScript", 
+      t.blog, t.title, params.lang
+    ],
     openGraph: {
       title: `Chizunet Blog | ${t.title}`,
       description: t.description,
       url,
       locale: params.lang === 'zh' ? 'zh_CN' : params.lang === 'ja' ? 'ja_JP' : 'en_US',
+      alternateLocale: ['zh_CN', 'en_US', 'ja_JP'].filter(l => l !== (params.lang === 'zh' ? 'zh_CN' : params.lang === 'ja' ? 'ja_JP' : 'en_US')),
       type: 'website',
       siteName: 'Chizunet Blog',
       images: [
@@ -69,7 +74,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function Home({ params }: PageProps) {
-  const initialPosts = await getPosts(params.lang);
+  const initialPosts = await getPosts(params.lang, 1, 12);
   const t = translations[params.lang] ?? translations['zh'];
 
   const jsonLd = {
@@ -85,7 +90,7 @@ export default async function Home({ params }: PageProps) {
     <div className="relative">
       <SchemaOrg schema={jsonLd} />
       <div className="relative z-10 pt-20">
-        <PostList initialPosts={initialPosts} />
+        <PostList initialPosts={initialPosts} lang={params.lang} />
       </div>
     </div>
   );

@@ -36,8 +36,6 @@ export default function GiscusComments({ slug }: GiscusCommentsProps) {
     ? `${window.location.origin}/styles/giscus-cheese-${resolvedTheme === 'dark' ? 'dark' : 'light'}.css`
     : '';
 
-  // If we have a slug, use it as the mapping term to share comments across languages
-  // Otherwise fall back to pathname mapping
   const mapping = slug ? "specific" : "pathname";
   const term = slug || undefined;
 
@@ -49,7 +47,6 @@ export default function GiscusComments({ slug }: GiscusCommentsProps) {
       transition={{ duration: 0.6 }}
       className="mt-24 mb-32 relative"
     >
-      {/* Decorative Cheese Holes - Softened */}
       <div className="hidden sm:block absolute -top-16 -right-16 w-48 h-48 opacity-80 dark:opacity-40 blur-2xl pointer-events-none select-none">
         <CheeseHole className="w-full h-full" delay={0.5} />
       </div>

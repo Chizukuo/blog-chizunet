@@ -48,6 +48,22 @@ body {
   @apply bg-cheese-600 dark:bg-stone-700;
 }
 
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-stone-300 dark:bg-stone-800 rounded-full;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-stone-400 dark:bg-stone-700;
+}
+
 @media (hover: hover) and (pointer: fine) {
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-cheese-600 dark:bg-stone-700;

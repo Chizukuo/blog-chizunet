@@ -9,6 +9,9 @@ type LogoProps = {
   className?: string;
 };
 
+/**
+ * 站点 Logo 组件
+ */
 export default function Logo({ compact = false, className = '' }: LogoProps) {
   const containerSize = compact ? 'w-10 h-10' : 'w-12 h-12 sm:w-14 sm:h-14';
   const titleSize = compact ? 'text-base sm:text-lg' : 'text-lg sm:text-xl';
@@ -26,7 +29,6 @@ export default function Logo({ compact = false, className = '' }: LogoProps) {
           className={`select-none ${scaleClass} motion-safe:transition-transform duration-300 ease-theme-spring motion-reduce:transition-none`}
         />
 
-        {/* Shine Effect (purely decorative) */}
         <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none" />
       </div>
 

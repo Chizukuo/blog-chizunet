@@ -11,7 +11,7 @@ import remarkDefinitionList from 'remark-definition-list';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
-import { Copy, Check, Terminal, ChevronRight } from 'lucide-react';
+import { Copy, Check, Terminal, ChevronRight, Link as LinkIcon } from 'lucide-react';
 import { common, createLowlight } from 'lowlight';
 import mermaid from 'mermaid';
 import plantumlEncoder from 'plantuml-encoder';
@@ -19,7 +19,6 @@ import { useTheme } from 'next-themes';
 import 'highlight.js/styles/github-dark.css';
 import 'katex/dist/katex.min.css';
 
-// Import specific languages that are not in the common set
 import x86asm from 'highlight.js/lib/languages/x86asm';
 import c from 'highlight.js/lib/languages/c';
 import cpp from 'highlight.js/lib/languages/cpp';
@@ -40,7 +39,6 @@ import diff from 'highlight.js/lib/languages/diff';
 import powershell from 'highlight.js/lib/languages/powershell';
 import lua from 'highlight.js/lib/languages/lua';
 
-// Custom Shell language definition for better tech blog highlighting
 const customShell = (hljs: any) => ({
   name: 'shell',
   aliases: ['sh', 'bash', 'zsh', 'shell'],
@@ -66,7 +64,6 @@ const customShell = (hljs: any) => ({
   ]
 });
 
-// Create lowlight instance and register languages
 const lowlight = createLowlight(common);
 lowlight.register('shell', customShell);
 lowlight.register('bash', customShell);
@@ -122,6 +119,7 @@ const allLanguages = {
 
 interface MarkdownRendererProps {
   content: string;
+  onHeadingsDetected?: (headings: { id: string; text: string; level: number }[]) => void;
 }
 
 import Image from 'next/image';
@@ -220,7 +218,7 @@ const PlantUMLDiagram = ({ code }: { code: string }) => {
   if (!url) return null;
 
   return (
-    <div className="my-8 flex justify-center overflow-x-auto bg-white p-4 dark:bg-white/5 rounded-lg border border-cheese-200/50 dark:border-stone-800/50">
+    <div className="my-8 flex justify-center overflow-x-auto bg-white p-4 dark:bg-white/5 rounded-lg">
       <img src={url} alt="PlantUML Diagram" className="max-w-full h-auto dark:invert-[.85]" loading="lazy" />
     </div>
   );
@@ -234,11 +232,9 @@ const CodeBlock = ({ children, className }: { children: any, className?: string 
   const currentLocale = _hasHydrated ? locale : 'zh';
   const t = translations[currentLocale];
   
-  // Extract language from className (e.g., "language-js" or "hljs language-js")
   const langMatch = className?.match(/language-(\w+)/);
   let language = langMatch ? langMatch[1] : 'text';
   
-  // Friendly names for common aliases
   const langMap: Record<string, string> = {
     'js': 'javascript',
     'ts': 'typescript',
@@ -298,7 +294,48 @@ const CodeBlock = ({ children, className }: { children: any, className?: string 
   );
 };
 
-export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
+const HeadingWithAnchor = ({ level, id, children, className }: { level: number, id?: string, children: React.ReactNode, className: string }) => {
+  const Tag = `h${level}` as any;
+  return (
+    <Tag id={id} className={`group flex items-center sm:-ml-8 sm:pl-8 relative ${className}`}>
+      <span className="hidden sm:block absolute left-0 opacity-0 group-hover:opacity-100 transition-all duration-200 -translate-x-2 group-hover:translate-x-0">
+        {id && (
+          <a
+            href={`#${id}`}
+            className="flex items-center justify-center w-6 h-6 text-stone-400 hover:text-cheese-500 dark:hover:text-cheese-400 transition-colors"
+            aria-label={`跳转到 ${typeof children === 'string' ? children : '此标题'}`}
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+              window.history.pushState(null, '', `#${id}`);
+            }}
+          >
+            <LinkIcon size={16} />
+          </a>
+        )}
+      </span>
+      {children}
+    </Tag>
+  );
+};
+
+/**
+ * Markdown 渲染组件，支持代码高亮、数学公式、Mermaid 图表、PlantUML 等
+ */
+export default function MarkdownRenderer({ content, onHeadingsDetected }: MarkdownRendererProps) {
+  useEffect(() => {
+    if (onHeadingsDetected) {
+      const headingElements = document.querySelectorAll('.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6');
+      const extractedHeadings = Array.from(headingElements).map(el => ({
+        id: el.id,
+        text: (el as HTMLElement).innerText || el.textContent || '',
+        level: parseInt(el.tagName.substring(1))
+      })).filter(h => h.id);
+      
+      onHeadingsDetected(extractedHeadings);
+    }
+  }, [content, onHeadingsDetected]);
+
   return (
     <div className="prose prose-cheese dark:prose-invert max-w-none notranslate">
       <ReactMarkdown
@@ -319,12 +356,12 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
           remarkDefinitionList
         ]}
         components={{
-          h1: ({ node, ...props }) => <h1 {...props} className="scroll-mt-32 text-4xl font-black text-stone-900 dark:text-stone-50 mb-8 mt-12 tracking-tight" />,
-          h2: ({ node, ...props }) => <h2 {...props} className="scroll-mt-32 text-3xl font-bold text-stone-800 dark:text-stone-100 mb-6 mt-10 tracking-tight border-b border-cheese-200/50 dark:border-stone-800/50 pb-2" />,
-          h3: ({ node, ...props }) => <h3 {...props} className="scroll-mt-32 text-2xl font-bold text-stone-800 dark:text-stone-100 mb-4 mt-8" />,
-          h4: ({ node, ...props }) => <h4 {...props} className="scroll-mt-32 text-xl font-bold text-stone-800 dark:text-stone-200 mb-3 mt-6" />,
-          h5: ({ node, ...props }) => <h5 {...props} className="scroll-mt-32 text-lg font-bold text-stone-800 dark:text-stone-200 mb-2 mt-4" />,
-          h6: ({ node, ...props }) => <h6 {...props} className="scroll-mt-32 text-base font-bold text-stone-800 dark:text-stone-200 mb-2 mt-4 uppercase tracking-wider" />,
+          h1: ({ node, id, ...props }) => <HeadingWithAnchor level={1} id={id} {...props} className="scroll-mt-32 text-4xl font-black text-stone-900 dark:text-stone-50 mb-8 mt-12 tracking-tight" />,
+          h2: ({ node, id, ...props }) => <HeadingWithAnchor level={2} id={id} {...props} className="scroll-mt-32 text-3xl font-bold text-stone-800 dark:text-stone-100 mb-6 mt-10 tracking-tight border-b border-cheese-200/50 dark:border-stone-800/50 pb-2" />,
+          h3: ({ node, id, ...props }) => <HeadingWithAnchor level={3} id={id} {...props} className="scroll-mt-32 text-2xl font-bold text-stone-800 dark:text-stone-100 mb-4 mt-8" />,
+          h4: ({ node, id, ...props }) => <HeadingWithAnchor level={4} id={id} {...props} className="scroll-mt-32 text-xl font-bold text-stone-800 dark:text-stone-200 mb-3 mt-6" />,
+          h5: ({ node, id, ...props }) => <HeadingWithAnchor level={5} id={id} {...props} className="scroll-mt-32 text-lg font-bold text-stone-800 dark:text-stone-200 mb-2 mt-4" />,
+          h6: ({ node, id, ...props }) => <HeadingWithAnchor level={6} id={id} {...props} className="scroll-mt-32 text-base font-bold text-stone-800 dark:text-stone-200 mb-2 mt-4 uppercase tracking-wider" />,
           p: ({ node, ...props }) => <p {...props} className="mb-6 leading-relaxed text-stone-700 dark:text-stone-300" />,
           ul: ({ node, className, ...props }) => (
             <ul 
@@ -382,12 +419,12 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
                     width={0}
                     height={0}
                     sizes="100vw"
-                    className="rounded-3xl border border-cheese-200/50 dark:border-stone-800/50 shadow-xl mx-auto w-full h-auto"
+                    className="rounded-3xl mx-auto w-full h-auto"
                   />
                 ) : (
                   <img 
                     {...props} 
-                    className="rounded-3xl border border-cheese-200/50 dark:border-stone-800/50 shadow-xl mx-auto max-w-full h-auto" 
+                    className="rounded-3xl mx-auto max-w-full h-auto" 
                     loading="lazy"
                   />
                 )}
@@ -400,7 +437,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
             );
           },
           blockquote: ({ node, ...props }) => (
-            <blockquote {...props} className="border-l-4 border-cheese-500 bg-cheese-50/50 dark:bg-stone-800/30 px-6 py-4 rounded-r-xl italic not-italic text-stone-700 dark:text-stone-300 shadow-sm my-6" />
+            <blockquote {...props} className="border-l-4 border-cheese-500 bg-cheese-50/50 dark:bg-stone-800/30 px-6 py-4 rounded-r-xl text-stone-700 dark:text-stone-300 shadow-sm my-6" />
           ),
           table: ({ node, ...props }) => (
             <div className="my-6 w-full overflow-hidden rounded-lg border border-cheese-300 dark:border-stone-700 shadow-sm bg-white dark:bg-stone-900/50">

@@ -23,7 +23,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   for (const lang of languages) {
-    // Add language home page
     sitemapList.push({
       url: `${baseUrl}/${lang}`,
       lastModified: new Date(),
@@ -38,7 +37,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     });
 
-    // Add posts for this language
     const posts = await getPosts(lang);
     const postUrls = posts.map((post) => ({
       url: `${baseUrl}/${lang}/${post.slug}`,

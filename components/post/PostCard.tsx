@@ -4,19 +4,20 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { zhCN, enUS, ja } from 'date-fns/locale';
-import { Post } from '@/types';
+import { Post, Locale } from '@/types';
 import { Calendar, Tag, ArrowRight } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { useI18n } from '@/hooks/useI18n';
 
 interface PostCardProps {
   post: Post;
+  lang: Locale;
 }
 
-export default function PostCard({ post }: PostCardProps) {
-  const { locale, _hasHydrated } = useI18n();
+/**
+ * 文章卡片组件，用于在列表中展示文章摘要
+ */
+export default function PostCard({ post, lang }: PostCardProps) {
   const reduceMotion = useReducedMotion();
-  const currentLocale = _hasHydrated ? locale : 'zh';
   
   const snippet = post.description || (post.body.slice(0, 150).replace(/[#*`]/g, '') + '...');
 
@@ -35,7 +36,7 @@ export default function PostCard({ post }: PostCardProps) {
 
   const shouldOptimize = (url: string) => {
     try {
-      if (url.startsWith('/') || url.startsWith('data:')) return true; // Always optimize local/data images
+      if (url.startsWith('/') || url.startsWith('data:')) return true;
       const hostname = new URL(url).hostname;
       return OPTIMIZED_DOMAINS.includes(hostname);
     } catch {
@@ -49,11 +50,11 @@ export default function PostCard({ post }: PostCardProps) {
       whileTap={reduceMotion ? undefined : { scale: 0.98 }}
       className="h-full"
     >
-      <Link href={`/${post.lang || 'zh'}/${post.slug}`} aria-label={`查看文章 ${post.title}`} className="block h-full">
+      <Link href={`/${lang}/${post.slug}`} aria-label={`查看文章 ${post.title}`} className="block h-full">
         <article role="article" aria-labelledby={`post-title-${post.id}`} className="bg-white dark:bg-stone-800/50 p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] shadow-sm sm:shadow-lg hover:shadow-md sm:hover:shadow-2xl border border-cheese-200/50 dark:border-stone-700/50 flex flex-col h-full relative overflow-hidden group transition-all duration-700 ease-theme-spring">
           <div className="relative z-10 flex flex-col h-full">
             {post.coverImage && (
-              <div className="mb-6 -mx-5 sm:-mx-8 -mt-5 sm:-mt-8 relative h-48 sm:h-64 overflow-hidden shadow-sm">
+              <div className="mb-6 -mx-5 sm:-mx-8 -mt-5 sm:-mt-8 relative h-48 sm:h-64 overflow-hidden">
                 <Image
                   src={post.coverImage}
                   alt={post.title}
@@ -71,8 +72,8 @@ export default function PostCard({ post }: PostCardProps) {
               <div className="flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
                 <time dateTime={post.created_at}>
-                  {format(new Date(post.created_at), currentLocale === 'zh' ? 'yyyy年MM月dd日' : 'MMM d, yyyy', {
-                    locale: dateLocales[currentLocale]
+                  {format(new Date(post.created_at), lang === 'zh' ? 'yyyy年MM月dd日' : 'MMM d, yyyy', {
+                    locale: dateLocales[lang]
                   })}
                 </time>
               </div>

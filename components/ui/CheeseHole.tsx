@@ -8,6 +8,9 @@ interface CheeseHoleProps {
   delay?: number;
 }
 
+/**
+ * 装饰性“芝士孔”组件，支持漂浮动画和拖拽交互
+ */
 export default function CheeseHole({ className, delay = 0 }: CheeseHoleProps) {
   const controls = useAnimation();
   const [shouldAnimate, setShouldAnimate] = useState(false);

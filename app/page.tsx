@@ -7,7 +7,7 @@ import SchemaOrg from "@/components/seo/SchemaOrg";
 export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = translations['zh']; // Default to zh
+  const t = translations['zh'];
   const baseUrl = 'https://blog.chizunet.cc';
   
   return {
@@ -41,7 +41,7 @@ export async function generateMetadata(): Promise<Metadata> {
       images: ['/og-image.png'],
     },
     alternates: {
-      canonical: `${baseUrl}/zh`, // Canonicalize to /zh to avoid duplication
+      canonical: `${baseUrl}/zh`,
       languages: {
         'zh': `${baseUrl}/zh`,
         'en': `${baseUrl}/en`,

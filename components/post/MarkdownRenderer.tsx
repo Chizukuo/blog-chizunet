@@ -294,7 +294,7 @@ const CodeBlock = ({ children, className }: { children: any, className?: string 
   );
 };
 
-const HeadingWithAnchor = ({ level, id, children, className }: { level: number, id?: string, children: React.ReactNode, className: string }) => {
+const HeadingWithAnchor = ({ level, id, children, className }: { level: number, id?: string, children?: React.ReactNode, className: string }) => {
   const Tag = `h${level}` as any;
   return (
     <Tag id={id} className={`group flex items-center sm:-ml-8 sm:pl-8 relative ${className}`}>

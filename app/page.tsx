@@ -69,7 +69,7 @@ export default async function Home() {
     <div className="relative">
       <SchemaOrg schema={jsonLd} />
       <div className="relative z-10 pt-20">
-        <PostList initialPosts={initialPosts} />
+        <PostList initialPosts={initialPosts} lang="zh" />
       </div>
     </div>
   );

@@ -126,19 +126,10 @@ import Image from 'next/image';
 import { useI18n } from '@/hooks/useI18n';
 import { translations } from '@/lib/translations';
 
-const OPTIMIZED_DOMAINS = [
-  'github.com',
-  'avatars.githubusercontent.com',
-  'user-images.githubusercontent.com',
-  'private-user-images.githubusercontent.com',
-];
-
 const shouldOptimize = (url: string) => {
   try {
     if (!url) return false;
-    if (url.startsWith('/') || url.startsWith('data:')) return true;
-    const hostname = new URL(url).hostname;
-    return OPTIMIZED_DOMAINS.includes(hostname);
+    return url.startsWith('/') || url.startsWith('data:');
   } catch {
     return false;
   }

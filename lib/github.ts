@@ -98,4 +98,41 @@ export async function getPostBySlug(slug: string, lang: Locale = 'zh'): Promise<
   return posts.find((post) => post.slug === slug) || null;
 }
 
+/**
+ * 根据标签获取文章列表
+ * @param lang 语言
+ * @param tag 标签名
+ */
+export async function getPostsByTag(lang: Locale = 'zh', tag: string): Promise<Post[]> {
+  const posts = await getPosts(lang);
+  const decoded = decodeURIComponent(tag);
+  return posts.filter((post) =>
+    post.labels.some((label) => label.name.toLowerCase() === decoded.toLowerCase())
+  );
+}
+
+/**
+ * 获取某语言下所有标签及计数
+ * @param lang 语言
+ */
+export async function getAllTags(lang: Locale = 'zh'): Promise<{ name: string; count: number; color: string }[]> {
+  const posts = await getPosts(lang);
+  const tagMap = new Map<string, { count: number; color: string }>();
+
+  posts.forEach((post) => {
+    post.labels.forEach((label) => {
+      const existing = tagMap.get(label.name);
+      if (existing) {
+        existing.count++;
+      } else {
+        tagMap.set(label.name, { count: 1, color: label.color });
+      }
+    });
+  });
+
+  return Array.from(tagMap.entries())
+    .map(([name, { count, color }]) => ({ name, count, color }))
+    .sort((a, b) => b.count - a.count);
+}
+
 

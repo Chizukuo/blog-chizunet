@@ -8,6 +8,7 @@ import MarkdownRenderer from './MarkdownRenderer';
 import PostHeader from './PostHeader';
 import GiscusComments from './GiscusComments';
 import TableOfContents from './TableOfContents';
+import ReadingProgress from './ReadingProgress';
 import { Heading } from '@/lib/parser';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
@@ -46,6 +47,7 @@ export default function PostContent({ initialPost, slug }: PostContentProps) {
 
   return (
     <article className="max-w-5xl 2xl:max-w-7xl mx-auto relative z-10 pt-20 px-0 sm:px-4 lg:px-8">
+      <ReadingProgress />
       <div className="flex flex-col xl:flex-row items-start gap-12">
         <div className="flex-1 min-w-0 w-full">
           <AnimatePresence mode="wait">

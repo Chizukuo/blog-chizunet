@@ -18,7 +18,8 @@ interface PostListProps {
  */
 export default function PostList({ initialPosts, lang }: PostListProps) {
   const reduceMotion = useReducedMotion();
-  const t = translations[lang];
+  const currentLang: Locale = (lang && ['zh', 'en', 'ja'].includes(lang)) ? lang : 'zh';
+  const t = translations[currentLang] ?? translations['zh'];
   const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -35,7 +36,7 @@ export default function PostList({ initialPosts, lang }: PostListProps) {
     setLoading(true);
     try {
       const nextPage = page + 1;
-      const newPosts = await getPosts(lang, nextPage, 12);
+      const newPosts = await getPosts(currentLang, nextPage, 12);
       if (newPosts.length === 0) {
         setHasMore(false);
       } else {
@@ -54,7 +55,7 @@ export default function PostList({ initialPosts, lang }: PostListProps) {
     <div className="space-y-12 sm:space-y-20 px-4 sm:px-0">
       <section className="text-left space-y-4 sm:space-y-6 py-8 sm:py-12 max-w-3xl">
         <motion.h1 
-          key={`title-${lang}`}
+          key={`title-${currentLang}`}
           initial={reduceMotion ? undefined : { opacity: 0, y: 20 }}
           animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
           className="font-black leading-none tracking-tighter"
@@ -67,7 +68,7 @@ export default function PostList({ initialPosts, lang }: PostListProps) {
           </span>
         </motion.h1>
         <motion.p 
-          key={`desc-${lang}`}
+          key={`desc-${currentLang}`}
           initial={reduceMotion ? undefined : { opacity: 0, y: 20 }}
           animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
           transition={reduceMotion ? undefined : { delay: 0.1 }}
@@ -87,7 +88,7 @@ export default function PostList({ initialPosts, lang }: PostListProps) {
                 animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
                 transition={reduceMotion ? undefined : { delay: index * 0.1 }}
               >
-                <PostCard post={post} lang={lang} />
+                <PostCard post={post} lang={currentLang} />
               </motion.div>
             ))
           ) : (

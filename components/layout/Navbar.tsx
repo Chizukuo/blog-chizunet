@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useParams } from 'next/navigation';
-import { Github, Mail, Moon, Sun, Monitor, Languages, X, Menu, ChevronDown, Home, ExternalLink, Palette, Globe, Share2 } from 'lucide-react';
+import { Github, Mail, Moon, Sun, Monitor, Languages, X, Menu, ChevronDown, Home, ExternalLink, Hash, CalendarDays } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { useEffect, useState, useRef } from 'react';
@@ -137,6 +137,18 @@ export default function Navbar() {
           >
             {t.mainSite}
           </a>
+          <Link
+            href={`/${currentLocale}/archive`}
+            className="px-3 py-1.5 text-xs font-black text-cheese-900/40 dark:text-cheese-100/40 hover:text-cheese-600 dark:hover:text-cheese-400 transition-colors uppercase tracking-widest"
+          >
+            {t.archive}
+          </Link>
+          <Link
+            href={`/${currentLocale}/tags`}
+            className="px-3 py-1.5 text-xs font-black text-cheese-900/40 dark:text-cheese-100/40 hover:text-cheese-600 dark:hover:text-cheese-400 transition-colors uppercase tracking-widest"
+          >
+            {t.tags}
+          </Link>
         </div>
       </motion.div>
 
@@ -296,6 +308,26 @@ export default function Navbar() {
                           </div>
                           <span className="text-base">{t.home}</span>
                         </Link>
+                        <Link 
+                          href={`/${currentLocale}/archive`}
+                          onClick={() => setShowMobileMenu(false)}
+                          className="flex items-center gap-4 px-4 py-3.5 font-bold rounded-2xl bg-cheese-50/50 dark:bg-stone-800/40 hover:bg-cheese-100 dark:hover:bg-stone-800 transition-all active:scale-[0.98]"
+                        >
+                          <div className="w-10 h-10 flex items-center justify-center bg-white dark:bg-stone-800 rounded-xl shadow-sm">
+                            <CalendarDays size={20} className="text-cheese-600" />
+                          </div>
+                          <span className="text-base">{t.archive}</span>
+                        </Link>
+                        <Link 
+                          href={`/${currentLocale}/tags`}
+                          onClick={() => setShowMobileMenu(false)}
+                          className="flex items-center gap-4 px-4 py-3.5 font-bold rounded-2xl bg-cheese-50/50 dark:bg-stone-800/40 hover:bg-cheese-100 dark:hover:bg-stone-800 transition-all active:scale-[0.98]"
+                        >
+                          <div className="w-10 h-10 flex items-center justify-center bg-white dark:bg-stone-800 rounded-xl shadow-sm">
+                            <Hash size={20} className="text-cheese-600" />
+                          </div>
+                          <span className="text-base">{t.tags}</span>
+                        </Link>
                         <a 
                           href="https://chizunet.cc" 
                           target="_blank" 
@@ -377,7 +409,7 @@ export default function Navbar() {
                     className="p-6 mt-auto border-t border-cheese-100/50 dark:border-stone-800/50 bg-cheese-50/30 dark:bg-stone-950/30"
                   >
                     <div className="flex items-center gap-2 px-1 mb-4">
-                      <Share2 size={12} className="text-cheese-500" />
+                      <div className="w-1 h-4 bg-cheese-500 rounded-full" />
                       <p className="text-[10px] font-black text-cheese-600 dark:text-cheese-400 uppercase tracking-[0.2em]">{t.connect}</p>
                     </div>
                     <div className="flex gap-3">

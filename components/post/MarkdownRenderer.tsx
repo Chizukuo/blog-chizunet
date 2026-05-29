@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
@@ -11,13 +11,13 @@ import remarkDefinitionList from 'remark-definition-list';
 import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
-import { Copy, Check, Terminal, ChevronRight, Link as LinkIcon } from 'lucide-react';
+import { Copy, Check, Terminal, ChevronRight, ChevronDown, ChevronUp, Link as LinkIcon } from 'lucide-react';
 import { common, createLowlight } from 'lowlight';
-import mermaid from 'mermaid';
-import plantumlEncoder from 'plantuml-encoder';
 import { useTheme } from 'next-themes';
 import 'highlight.js/styles/github-dark.css';
 import 'katex/dist/katex.min.css';
+import Zoom from 'react-medium-image-zoom';
+import 'react-medium-image-zoom/dist/styles.css';
 
 import x86asm from 'highlight.js/lib/languages/x86asm';
 import c from 'highlight.js/lib/languages/c';
@@ -119,12 +119,15 @@ const allLanguages = {
 
 interface MarkdownRendererProps {
   content: string;
-  onHeadingsDetected?: (headings: { id: string; text: string; level: number }[]) => void;
 }
 
 import Image from 'next/image';
 import { useI18n } from '@/hooks/useI18n';
 import { translations } from '@/lib/translations';
+
+// Lazy-loaded heavy components
+const MermaidDiagram = React.lazy(() => import('./MermaidDiagram'));
+const PlantUMLDiagram = React.lazy(() => import('./PlantUMLDiagram'));
 
 const shouldOptimize = (url: string) => {
   try {
@@ -135,96 +138,21 @@ const shouldOptimize = (url: string) => {
   }
 };
 
-const MermaidDiagram = ({ code }: { code: string }) => {
-  const [svg, setSvg] = useState('');
-  const [error, setError] = useState(false);
-  const { theme, systemTheme } = useTheme();
-  const mounted = useRef(false);
 
-  useEffect(() => {
-    mounted.current = true;
-    return () => { mounted.current = false; };
-  }, []);
-
-  useEffect(() => {
-    if (!mounted.current) return;
-
-    const currentTheme = theme === 'system' ? systemTheme : theme;
-    const mermaidTheme = currentTheme === 'dark' ? 'dark' : 'default';
-
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: mermaidTheme,
-      securityLevel: 'loose',
-      fontFamily: 'inherit',
-    });
-    
-    const renderDiagram = async () => {
-      try {
-        const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
-        const { svg } = await mermaid.render(id, code);
-        if (mounted.current) {
-          setSvg(svg);
-          setError(false);
-        }
-      } catch (e) {
-        console.error('Mermaid render error:', e);
-        if (mounted.current) {
-          setError(true);
-        }
-      }
-    };
-
-    renderDiagram();
-  }, [code, theme, systemTheme]);
-
-  if (error) return (
-    <div className="my-8 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
-      <p className="mb-2 font-bold">Mermaid Error:</p>
-      <pre className="overflow-x-auto text-xs">{code}</pre>
-    </div>
-  );
-  
-  if (!svg) return (
-    <div className="my-8 flex h-32 w-full animate-pulse items-center justify-center rounded-lg bg-cheese-100/50 dark:bg-stone-800/50">
-      <span className="text-sm text-cheese-600/50 dark:text-stone-500">Loading Diagram...</span>
-    </div>
-  );
-
-  return <div className="mermaid my-8 flex justify-center overflow-x-auto" dangerouslySetInnerHTML={{ __html: svg }} />;
-};
-
-const PlantUMLDiagram = ({ code }: { code: string }) => {
-  const [url, setUrl] = useState('');
-
-  useEffect(() => {
-    try {
-      const encoded = plantumlEncoder.encode(code.trim());
-      setUrl(`https://www.plantuml.com/plantuml/svg/${encoded}`);
-    } catch (e) {
-      console.error('PlantUML encode error:', e);
-    }
-  }, [code]);
-
-  if (!url) return null;
-
-  return (
-    <div className="my-8 flex justify-center overflow-x-auto bg-white p-4 dark:bg-white/5 rounded-lg">
-      <img src={url} alt="PlantUML Diagram" className="max-w-full h-auto dark:invert-[.85]" loading="lazy" />
-    </div>
-  );
-};
+const CODE_COLLAPSE_THRESHOLD = 25;
 
 const CodeBlock = ({ children, className }: { children: any, className?: string }) => {
   const [copied, setCopied] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const codeRef = React.useRef<HTMLElement>(null);
   const { locale, _hasHydrated } = useI18n();
   
   const currentLocale = _hasHydrated ? locale : 'zh';
   const t = translations[currentLocale];
   
-  const langMatch = className?.match(/language-(\w+)/);
+  const langMatch = className?.match(/language-(\w+)(?::(.+))?/);
   let language = langMatch ? langMatch[1] : 'text';
+  const filename = langMatch ? langMatch[2] : null;
   
   const langMap: Record<string, string> = {
     'js': 'javascript',
@@ -243,6 +171,11 @@ const CodeBlock = ({ children, className }: { children: any, className?: string 
   
   const displayLanguage = langMap[language.toLowerCase()] || language;
 
+  // Count lines for collapse feature
+  const codeStr = String(children).replace(/\n$/, '');
+  const lineCount = codeStr.split('\n').length;
+  const shouldCollapse = lineCount > CODE_COLLAPSE_THRESHOLD;
+
   const onCopy = () => {
     if (codeRef.current) {
       const content = codeRef.current.innerText.replace(/\n$/, '');
@@ -253,11 +186,23 @@ const CodeBlock = ({ children, className }: { children: any, className?: string 
   };
 
   return (
-    <div className="group relative my-8 overflow-hidden rounded-2xl border border-cheese-200/10 bg-stone-950/80 backdrop-blur-md dark:border-stone-800/50 dark:bg-black/60">
-      <div className="flex items-center justify-between border-b border-cheese-200/10 bg-white/5 px-4 py-2 dark:border-stone-800/50">
-        <div className="flex items-center gap-2 text-xs font-medium text-cheese-600/80 dark:text-cheese-400/80">
-          <Terminal size={14} />
-          <span className="uppercase tracking-wider">{displayLanguage}</span>
+    <div className="group relative my-8 overflow-hidden rounded-2xl border border-cheese-200/20 bg-stone-950/90 backdrop-blur-xl dark:border-stone-800/60 dark:bg-black/80 shadow-2xl transition-all duration-300 hover:border-cheese-300/40 dark:hover:border-stone-700/80">
+      <div className="flex items-center justify-between border-b border-cheese-200/10 bg-white/5 py-3 px-5 dark:border-stone-800/50">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-cheese-500/90 dark:text-cheese-400/90">
+            <Terminal size={14} />
+            <span>{displayLanguage}</span>
+          </div>
+          {filename && (
+            <div className="flex items-center gap-2 border-l border-white/10 pl-3">
+              <span className="text-xs font-bold text-white/50">{filename}</span>
+            </div>
+          )}
+          {shouldCollapse && (
+            <span className="text-[10px] text-white/25 font-medium tabular-nums">
+              {lineCount} lines
+            </span>
+          )}
         </div>
         <button
           onClick={onCopy}
@@ -276,11 +221,38 @@ const CodeBlock = ({ children, className }: { children: any, className?: string 
           )}
         </button>
       </div>
-      <div className="overflow-x-auto p-6 text-sm leading-relaxed">
+      <div
+        className={`overflow-x-auto p-6 text-sm leading-relaxed transition-all duration-500 relative ${
+          shouldCollapse && collapsed ? 'max-h-[400px] overflow-hidden' : ''
+        }`}
+      >
         <code ref={codeRef} className={`${className} !bg-transparent !p-0 font-mono`}>
           {children}
         </code>
+        {/* Gradient fade for collapsed code */}
+        {shouldCollapse && collapsed && (
+          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-stone-950 dark:from-black to-transparent pointer-events-none" />
+        )}
       </div>
+      {/* Expand / Collapse toggle */}
+      {shouldCollapse && (
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="w-full flex items-center justify-center gap-2 py-2.5 border-t border-cheese-200/10 dark:border-stone-800/40 text-xs font-bold text-cheese-500/60 dark:text-cheese-400/50 hover:text-cheese-400 hover:bg-white/5 transition-all"
+        >
+          {collapsed ? (
+            <>
+              <ChevronDown size={14} />
+              <span>{t.expandCode?.replace('{n}', String(lineCount - CODE_COLLAPSE_THRESHOLD)) || `Expand ${lineCount - CODE_COLLAPSE_THRESHOLD} lines`}</span>
+            </>
+          ) : (
+            <>
+              <ChevronUp size={14} />
+              <span>{t.collapseCode || 'Collapse'}</span>
+            </>
+          )}
+        </button>
+      )}
     </div>
   );
 };
@@ -313,19 +285,12 @@ const HeadingWithAnchor = ({ level, id, children, className }: { level: number, 
 /**
  * Markdown 渲染组件，支持代码高亮、数学公式、Mermaid 图表、PlantUML 等
  */
-export default function MarkdownRenderer({ content, onHeadingsDetected }: MarkdownRendererProps) {
-  useEffect(() => {
-    if (onHeadingsDetected) {
-      const headingElements = document.querySelectorAll('.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6');
-      const extractedHeadings = Array.from(headingElements).map(el => ({
-        id: el.id,
-        text: (el as HTMLElement).innerText || el.textContent || '',
-        level: parseInt(el.tagName.substring(1))
-      })).filter(h => h.id);
-      
-      onHeadingsDetected(extractedHeadings);
-    }
-  }, [content, onHeadingsDetected]);
+export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
+  const DiagramSkeleton = (
+    <div className="my-8 flex h-32 w-full animate-pulse items-center justify-center rounded-lg bg-cheese-100/50 dark:bg-stone-800/50">
+      <span className="text-sm text-cheese-600/50 dark:text-stone-500">Loading Diagram...</span>
+    </div>
+  );
 
   return (
     <div className="prose prose-cheese dark:prose-invert max-w-none notranslate">
@@ -404,20 +369,24 @@ export default function MarkdownRenderer({ content, onHeadingsDetected }: Markdo
             return (
               <span className="block my-8">
                 {isOptimized ? (
-                  <Image
-                    src={props.src as string}
-                    alt={props.alt || ''}
-                    width={0}
-                    height={0}
-                    sizes="100vw"
-                    className="rounded-3xl mx-auto w-full h-auto"
-                  />
+                  <Zoom>
+                    <Image
+                      src={props.src as string}
+                      alt={props.alt || ''}
+                      width={0}
+                      height={0}
+                      sizes="100vw"
+                      className="rounded-3xl mx-auto w-full h-auto cursor-zoom-in"
+                    />
+                  </Zoom>
                 ) : (
-                  <img 
-                    {...props} 
-                    className="rounded-3xl mx-auto max-w-full h-auto" 
-                    loading="lazy"
-                  />
+                  <Zoom>
+                    <img 
+                      {...props} 
+                      className="rounded-3xl mx-auto max-w-full h-auto cursor-zoom-in" 
+                      loading="lazy"
+                    />
+                  </Zoom>
                 )}
                 {props.alt && (
                   <span className="block text-center text-sm text-stone-500 dark:text-stone-400 mt-3 font-medium italic">
@@ -481,11 +450,19 @@ export default function MarkdownRenderer({ content, onHeadingsDetected }: Markdo
             }
 
             if (language === 'mermaid') {
-              return <MermaidDiagram code={String(children).replace(/\n$/, '')} />;
+              return (
+                <Suspense fallback={DiagramSkeleton}>
+                  <MermaidDiagram code={String(children).replace(/\n$/, '')} />
+                </Suspense>
+              );
             }
             
             if (language === 'plantuml') {
-               return <PlantUMLDiagram code={String(children).replace(/\n$/, '')} />;
+              return (
+                <Suspense fallback={DiagramSkeleton}>
+                  <PlantUMLDiagram code={String(children).replace(/\n$/, '')} />
+                </Suspense>
+              );
             }
 
             return <CodeBlock className={className}>{children}</CodeBlock>;

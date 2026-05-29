@@ -3,7 +3,8 @@ import { Locale, Post } from '@/types';
 import { translations } from '@/lib/translations';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, Calendar } from 'lucide-react';
+import { ArrowLeft, Calendar, Inbox } from 'lucide-react';
+import EmptyState from '@/components/ui/EmptyState';
 import { format } from 'date-fns';
 import { zhCN, enUS, ja as jaLocale } from 'date-fns/locale';
 
@@ -94,62 +95,71 @@ export default async function ArchivePage({ params }: PageProps) {
 
       {/* Timeline */}
       {groups.length === 0 ? (
-        <div className="text-center py-24">
-          <p className="text-cheese-900/50 dark:text-cheese-200/50 font-medium">{t.noPosts}</p>
+        <div className="py-12">
+          <EmptyState message={t.noPosts} icon={Inbox} actionHref={`/${params.lang}`} actionLabel={t.backToHome} />
         </div>
       ) : (
-        <div className="space-y-14 pb-20">
+        <div className="relative border-l-2 border-cheese-200 dark:border-stone-800 space-y-16 pl-8 ml-4 sm:ml-8 pb-20">
           {groups.map(({ year, months }) => (
-            <section key={year}>
-              {/* Year label */}
-              <div className="flex items-center gap-4 mb-6">
-                <h2 className="text-5xl sm:text-7xl font-black text-cheese-500/20 dark:text-cheese-400/20 tracking-tighter select-none tabular-nums leading-none">
-                  {year}
-                </h2>
-                <div className="flex-1 h-[1px] bg-cheese-200/50 dark:bg-stone-800/80" />
+            <section key={year} className="relative">
+              {/* Year marker */}
+              <div className="absolute -left-[2.3rem] sm:-left-[2.8rem] w-8 h-8 rounded-full bg-cheese-100 dark:bg-stone-900 border-4 border-cheese-400 flex items-center justify-center shadow-[0_0_15px_rgba(255,179,0,0.5)] z-10 animate-cheese-glow">
+                <div className="w-2 h-2 bg-cheese-600 rounded-full" />
               </div>
+              
+              <h2 className="text-5xl sm:text-7xl font-black text-cheese-500/30 dark:text-cheese-400/20 tracking-tighter select-none tabular-nums leading-none mb-8 pt-1">
+                {year}
+              </h2>
 
               {/* Months */}
-              <div className="space-y-8 pl-2">
+              <div className="space-y-10">
                 {months.map(({ month, posts: monthPosts }) => (
-                  <div key={month}>
-                    <h3 className="text-xs font-black uppercase tracking-widest text-cheese-900/35 dark:text-cheese-100/35 mb-3 ml-6">
+                  <div key={month} className="relative">
+                    <h3 className="text-sm font-black uppercase tracking-widest text-cheese-600 dark:text-cheese-400 mb-6">
                       {month}
                     </h3>
-                    <ul className="space-y-1">
+                    <div className="space-y-6">
                       {monthPosts.map((post) => (
-                        <li key={post.id}>
+                        <div key={post.id} className="group relative">
+                          {/* Post node connector */}
+                          <div className="absolute -left-9 sm:-left-11 top-8 w-6 h-[2px] bg-cheese-200 dark:bg-stone-800 transition-colors group-hover:bg-cheese-400" />
+                          <div className="absolute -left-[2.45rem] sm:-left-[2.95rem] top-[1.8rem] w-3 h-3 rounded-full border-2 border-cheese-300 dark:border-stone-700 bg-white dark:bg-stone-900 transition-all duration-300 group-hover:scale-150 group-hover:border-cheese-500 group-hover:animate-bounce-x z-10" />
+
                           <Link
                             href={`/${params.lang}/${post.slug}`}
-                            className="group flex items-baseline gap-4 py-2.5 px-4 rounded-2xl hover:bg-cheese-50/80 dark:hover:bg-stone-800/50 transition-all duration-200"
+                            className="block glass-panel hover:scale-[1.02] active:scale-95 rounded-2xl p-6 hover:shadow-[0_0_20px_rgba(255,179,0,0.15)] transition-all duration-300"
                           >
-                            {/* Date dot + day */}
-                            <span className="flex-shrink-0 w-16 text-xs font-bold text-cheese-900/35 dark:text-cheese-100/35 group-hover:text-cheese-500 dark:group-hover:text-cheese-400 transition-colors tabular-nums">
-                              {format(new Date(post.created_at), dayFmt, { locale: dl })}
-                            </span>
+                            <div className="flex flex-col sm:flex-row sm:items-baseline gap-4">
+                              <span className="flex-shrink-0 text-sm font-bold text-cheese-500/80 dark:text-cheese-400/80 tabular-nums">
+                                {format(new Date(post.created_at), dayFmt, { locale: dl })}
+                              </span>
+                              <span className="flex-1 text-lg sm:text-xl font-bold text-cheese-900 dark:text-cheese-50 group-hover:text-cheese-600 transition-colors leading-snug">
+                                {post.title}
+                              </span>
+                            </div>
 
-                            {/* Title */}
-                            <span className="flex-1 text-sm sm:text-base font-semibold text-cheese-900/80 dark:text-cheese-100/80 group-hover:text-cheese-700 dark:group-hover:text-cheese-300 transition-colors leading-snug line-clamp-1">
-                              {post.title}
-                            </span>
+                            {post.description && (
+                              <p className="mt-3 text-sm text-cheese-900/60 dark:text-cheese-200/60 line-clamp-2">
+                                {post.description}
+                              </p>
+                            )}
 
-                            {/* Tags */}
                             {post.labels.length > 0 && (
-                              <span className="hidden sm:flex flex-shrink-0 items-center gap-1.5">
-                                {post.labels.slice(0, 2).map((label) => (
+                              <div className="mt-4 flex flex-wrap gap-2">
+                                {post.labels.map((label) => (
                                   <span
                                     key={label.id}
-                                    className="text-[10px] font-bold px-2 py-0.5 bg-cheese-100/60 dark:bg-stone-700/60 text-cheese-600 dark:text-cheese-400 rounded-lg border border-cheese-200/50 dark:border-stone-600/50"
+                                    className="text-xs font-bold px-2.5 py-1 bg-cheese-100/50 dark:bg-stone-800/80 text-cheese-700 dark:text-cheese-300 rounded-lg border border-cheese-200/50 dark:border-stone-700/50"
                                   >
-                                    {label.name}
+                                    #{label.name}
                                   </span>
                                 ))}
-                              </span>
+                              </div>
                             )}
                           </Link>
-                        </li>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 ))}
               </div>

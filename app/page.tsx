@@ -1,4 +1,4 @@
-import { getPosts } from "@/lib/github";
+import { getPosts, getStats } from "@/lib/github";
 import PostList from "@/components/post/PostList";
 import { translations } from "@/lib/translations";
 import { Metadata } from "next";
@@ -53,7 +53,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const initialPosts = await getPosts('zh');
+  const [initialPosts, stats] = await Promise.all([
+    getPosts('zh'),
+    getStats('zh'),
+  ]);
   const t = translations['zh'];
 
   const jsonLd = {
@@ -69,7 +72,7 @@ export default async function Home() {
     <div className="relative">
       <SchemaOrg schema={jsonLd} />
       <div className="relative z-10 pt-20">
-        <PostList initialPosts={initialPosts} lang="zh" />
+        <PostList initialPosts={initialPosts} lang="zh" stats={stats} />
       </div>
     </div>
   );

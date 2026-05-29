@@ -1,4 +1,4 @@
-import { getPosts } from "@/lib/github";
+import { getPosts, getStats } from "@/lib/github";
 import PostList from "@/components/post/PostList";
 import { Locale } from "@/types";
 import { translations } from "@/lib/translations";
@@ -74,7 +74,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function Home({ params }: PageProps) {
-  const initialPosts = await getPosts(params.lang, 1, 12);
+  const [initialPosts, stats] = await Promise.all([
+    getPosts(params.lang, 1, 12),
+    getStats(params.lang),
+  ]);
   const t = translations[params.lang] ?? translations['zh'];
 
   const jsonLd = {
@@ -90,7 +93,7 @@ export default async function Home({ params }: PageProps) {
     <div className="relative">
       <SchemaOrg schema={jsonLd} />
       <div className="relative z-10 pt-20">
-        <PostList initialPosts={initialPosts} lang={params.lang} />
+        <PostList initialPosts={initialPosts} lang={params.lang} stats={stats} />
       </div>
     </div>
   );

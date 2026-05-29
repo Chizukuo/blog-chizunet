@@ -24,6 +24,8 @@ export interface Post {
   description?: string;
   coverImage?: string;
   lang?: Locale;
+  series?: string;
+  category?: string;
 }
 
 export type Locale = 'zh' | 'en' | 'ja';

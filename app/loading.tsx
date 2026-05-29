@@ -1,23 +1,32 @@
+import PostCardSkeleton from '@/components/post/PostCardSkeleton';
+
+/**
+ * 全局加载骨架屏 — 使用 PostCard 形状匹配的 skeleton 网格
+ * 保持 cheese 品牌一致性
+ */
 export default function Loading() {
   return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-6">
-      {/* Spinning cheese wedge rings */}
-      <div className="relative w-14 h-14">
-        <div className="absolute inset-0 border-[3px] border-cheese-200/50 dark:border-stone-800/60 rounded-full" />
-        <div className="absolute inset-0 border-[3px] border-transparent border-t-cheese-500 rounded-full animate-spin" />
-        <div
-          className="absolute inset-[5px] border-[2px] border-transparent border-t-cheese-300 rounded-full animate-spin"
-          style={{ animationDuration: '0.7s', animationDirection: 'reverse' }}
-        />
-        {/* Center dot */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-2 h-2 rounded-full bg-cheese-500 animate-pulse" />
+    <div className="relative z-10 pt-20 px-4 sm:px-0">
+      {/* Hero skeleton */}
+      <div className="space-y-6 py-8 sm:py-12 max-w-4xl animate-pulse">
+        <div className="space-y-4">
+          <div className="h-8 w-20 bg-cheese-200/40 dark:bg-stone-800/40 rounded-lg" />
+          <div className="h-14 sm:h-20 w-3/4 bg-cheese-200/50 dark:bg-stone-800/50 rounded-2xl" />
+        </div>
+        <div className="h-6 w-2/3 bg-cheese-100/60 dark:bg-stone-800/40 rounded-lg" />
+        <div className="flex gap-3">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="h-9 w-28 bg-cheese-100/50 dark:bg-stone-800/30 rounded-2xl" />
+          ))}
         </div>
       </div>
-      <div className="space-y-1 text-center">
-        <p className="text-sm font-bold text-cheese-900/50 dark:text-cheese-100/40 animate-pulse tracking-wide">
-          Loading
-        </p>
+
+      {/* Cards skeleton grid */}
+      <div className="grid gap-6 sm:gap-8 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 mt-12 sm:mt-20">
+        <PostCardSkeleton featured />
+        {[...Array(5)].map((_, i) => (
+          <PostCardSkeleton key={i} />
+        ))}
       </div>
     </div>
   );

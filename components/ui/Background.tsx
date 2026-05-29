@@ -12,7 +12,7 @@ export default function Background() {
   const isHome = pathname === '/' || ['/en', '/ja', '/zh'].includes(pathname);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 background-decor">
       <motion.div
         initial={false}
         animate={{

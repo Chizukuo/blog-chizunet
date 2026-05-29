@@ -8,6 +8,8 @@ export interface ParsedPostData {
   coverImage?: string;
   body: string;
   title?: string;
+  series?: string;
+  category?: string;
 }
 
 export interface Heading {
@@ -30,11 +32,12 @@ export function extractHeadings(content: string): Heading[] {
   while ((match = headingRegex.exec(contentWithoutCodeBlocks)) !== null) {
     const level = match[1].length;
     const text = match[2].trim();
-    // 简单的 slugify，尽量匹配 rehype-slug 的行为
     const id = text
       .toLowerCase()
+      .trim()
       .replace(/\s+/g, '-')
-      .replace(/[^\w-]/g, '')
+      .replace(new RegExp('[^\\p{L}\\p{N}_-]+', 'gu'), '')
+      .replace(/-+/g, '-')
       .replace(/^-+|-+$/g, '');
     
     headings.push({ id, text, level });
@@ -75,6 +78,8 @@ export function parseIssueBody(body: string): ParsedPostData {
   const slug = parseSection('Slug');
   const lang = parseSection('Language');
   const description = parseSection('Description');
+  const series = parseSection('Series');
+  const category = parseSection('Category');
   let coverImage = parseSection('Cover Image') || parseSection('Cover Image URL');
 
   if (coverImage) {
@@ -101,6 +106,8 @@ export function parseIssueBody(body: string): ParsedPostData {
       slug: slug || undefined,
       lang: (lang as Locale) || undefined,
       description: description || undefined,
+      series: series || undefined,
+      category: category || undefined,
       coverImage: coverImage || undefined,
       body: content || body,
       title: undefined

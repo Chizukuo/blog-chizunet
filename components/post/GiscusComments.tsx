@@ -69,7 +69,7 @@ export default function GiscusComments({ slug }: GiscusCommentsProps) {
               <Sparkles className="w-5 h-5 text-cheese-400 animate-pulse" />
             </h3>
             <p className="text-sm text-cheese-800/60 dark:text-stone-400 font-medium">
-              Join the conversation
+              {t.poweredBy}
             </p>
           </div>
           

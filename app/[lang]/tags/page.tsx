@@ -3,7 +3,8 @@ import { Locale } from '@/types';
 import { translations } from '@/lib/translations';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, Hash } from 'lucide-react';
+import { ArrowLeft, Hash, Inbox } from 'lucide-react';
+import EmptyState from '@/components/ui/EmptyState';
 
 interface PageProps {
   params: { lang: Locale };
@@ -59,8 +60,8 @@ export default async function TagsPage({ params }: PageProps) {
 
       {/* Tag cloud */}
       {allTags.length === 0 ? (
-        <div className="text-center py-24 bg-white/50 dark:bg-stone-900/50 backdrop-blur-md rounded-[2rem] border border-cheese-200/50 dark:border-stone-800/50">
-          <p className="text-cheese-900/50 dark:text-cheese-200/50 font-medium">{t.noPosts}</p>
+        <div className="py-6">
+          <EmptyState message={t.noPosts} icon={Inbox} actionHref={`/${params.lang}`} actionLabel={t.backToHome} />
         </div>
       ) : (
         <div className="bg-white/50 dark:bg-stone-900/50 backdrop-blur-md rounded-[2rem] border border-cheese-200/50 dark:border-stone-800/50 p-8 sm:p-12">

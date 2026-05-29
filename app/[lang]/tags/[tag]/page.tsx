@@ -4,7 +4,8 @@ import { Locale } from '@/types';
 import { translations } from '@/lib/translations';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, Hash } from 'lucide-react';
+import { ArrowLeft, Hash, Inbox } from 'lucide-react';
+import EmptyState from '@/components/ui/EmptyState';
 import { notFound } from 'next/navigation';
 
 interface PageProps {
@@ -116,10 +117,8 @@ export default async function TagPage({ params }: PageProps) {
           ))}
         </section>
       ) : (
-        <div className="text-center py-24 bg-white/50 dark:bg-stone-900/50 backdrop-blur-md rounded-[2rem] border border-cheese-200/50 dark:border-stone-800/50">
-          <p className="text-cheese-900/50 dark:text-cheese-200/50 text-lg font-medium">
-            {t.noPostsWithTag}
-          </p>
+        <div className="py-6">
+          <EmptyState message={t.noPostsWithTag} icon={Inbox} actionHref={`/${params.lang}/tags`} actionLabel={t.tags} />
         </div>
       )}
     </div>

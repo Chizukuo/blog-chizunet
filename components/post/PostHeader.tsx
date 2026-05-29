@@ -10,6 +10,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Post, Locale } from '@/types';
 import { useParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { FastAverageColor } from 'fast-average-color';
 
 interface PostHeaderProps {
   post: Post;
@@ -29,6 +31,24 @@ export default function PostHeader({ post }: PostHeaderProps) {
   const urlLocale = (params?.lang as Locale) || undefined;
   const currentLocale = urlLocale || (_hasHydrated ? locale : 'zh');
   const t = translations[currentLocale];
+  const [ambientColor, setAmbientColor] = useState<string>('');
+
+  useEffect(() => {
+    if (post.coverImage) {
+      const fac = new FastAverageColor();
+      const img = new window.Image();
+      img.crossOrigin = 'Anonymous';
+      img.src = post.coverImage;
+      img.onload = () => {
+        try {
+          const color = fac.getColor(img);
+          setAmbientColor(color.rgba);
+        } catch (e) {
+          console.warn('Could not extract ambient color', e);
+        }
+      };
+    }
+  }, [post.coverImage]);
 
   const dateLocales = { zh: zhCN, en: enUS, ja: ja };
   const readingMinutes = calcReadingTime(post.body, currentLocale);
@@ -40,7 +60,14 @@ export default function PostHeader({ post }: PostHeaderProps) {
     : 'MMMM d, yyyy';
 
   return (
-    <header className="w-full overflow-hidden mb-8 sm:mb-12 space-y-4 sm:space-y-6 notranslate px-4 sm:px-0">
+    <div className="relative">
+      {ambientColor && (
+        <div 
+          className="absolute -top-32 left-1/2 -translate-x-1/2 w-full max-w-4xl h-96 blur-[120px] opacity-30 dark:opacity-20 pointer-events-none rounded-full transition-colors duration-1000 -z-10"
+          style={{ backgroundColor: ambientColor }}
+        />
+      )}
+      <header className="w-full overflow-hidden mb-8 sm:mb-12 space-y-4 sm:space-y-6 notranslate px-4 sm:px-0">
       <Link
         href={`/${currentLocale}`}
         className="inline-flex items-center gap-2 text-sm font-bold text-cheese-600/80 dark:text-cheese-400/80 hover:text-cheese-600 dark:hover:text-cheese-400 hover:gap-3 transition-all duration-200 group"
@@ -110,20 +137,30 @@ export default function PostHeader({ post }: PostHeaderProps) {
         </a>
       </div>
 
-      {/* Clickable tag badges */}
-      {post.labels.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {post.labels.map((label) => (
-            <Link
-              key={label.id}
-              href={`/${currentLocale}/tags/${encodeURIComponent(label.name)}`}
-              className="text-xs font-bold px-3 py-1.5 bg-cheese-100/50 dark:bg-stone-800/50 backdrop-blur-sm text-cheese-700 dark:text-cheese-300 rounded-xl border border-cheese-200/60 dark:border-stone-700 shadow-sm hover:bg-cheese-200/60 dark:hover:bg-stone-700/70 hover:border-cheese-300/80 transition-all duration-200"
-            >
-              #{label.name}
-            </Link>
-          ))}
-        </div>
-      )}
+      <div className="flex flex-wrap items-center gap-2">
+        {post.category && (
+          <div className="text-xs font-black uppercase tracking-widest px-3 py-1 bg-cheese-500 text-white rounded-full shadow-lg shadow-cheese-500/20">
+            {post.category}
+          </div>
+        )}
+        
+        {post.series && (
+          <div className="text-xs font-bold px-3 py-1 bg-white/50 dark:bg-stone-800/50 text-cheese-600 dark:text-cheese-400 rounded-full border border-cheese-200/60 dark:border-stone-700">
+            {t.series}: {post.series}
+          </div>
+        )}
+
+        {/* Clickable tag badges */}
+        {post.labels.length > 0 && post.labels.map((label) => (
+          <Link
+            key={label.id}
+            href={`/${currentLocale}/tags/${encodeURIComponent(label.name)}`}
+            className="text-xs font-bold px-3 py-1 bg-cheese-100/30 dark:bg-stone-800/30 text-cheese-700/70 dark:text-cheese-300/70 rounded-full border border-cheese-200/40 dark:border-stone-700/40 hover:bg-cheese-100/60 dark:hover:bg-stone-800/60 transition-all"
+          >
+            #{label.name}
+          </Link>
+        ))}
+      </div>
 
       {post.coverImage && (
         <div className="mt-8 sm:mt-12 relative w-full aspect-video sm:aspect-[2/1] rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden group">
@@ -139,5 +176,6 @@ export default function PostHeader({ post }: PostHeaderProps) {
         </div>
       )}
     </header>
+    </div>
   );
 }

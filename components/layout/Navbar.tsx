@@ -1,9 +1,9 @@
 'use client';
 
 import { Github, Mail, Menu } from 'lucide-react';
-import { motion, useReducedMotion, useScroll, useMotionValueEvent, useTransform } from 'framer-motion';
+import { motion, useScroll, useMotionValueEvent, useTransform } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { useI18n } from '@/hooks/useI18n';
+import { useLocale } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
 
 import Logo from '@/components/ui/Logo';
@@ -18,14 +18,12 @@ import { Search } from 'lucide-react';
  * 导航栏 — Apple vibrancy: 滚动时增强毛玻璃 + 背景不透明度
  */
 export default function Navbar() {
-  const { locale, _hasHydrated } = useI18n();
   const [mounted, setMounted] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { scrollY } = useScroll();
-  const reduceMotion = useReducedMotion();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() || 0;
@@ -63,7 +61,7 @@ export default function Navbar() {
     setMounted(true);
   }, []);
 
-  const currentLocale = _hasHydrated ? locale : 'zh';
+  const currentLocale = useLocale();
   const t = (translations as any)[currentLocale] ?? translations['zh'];
 
   return (
@@ -82,8 +80,8 @@ export default function Navbar() {
     >
       <div className="mx-auto max-w-[120rem] px-4 sm:px-6 py-4 sm:py-5 flex justify-between items-center">
         <motion.div
-          initial={reduceMotion ? undefined : { opacity: 0, x: -20 }}
-          animate={reduceMotion ? undefined : { opacity: 1, x: 0 }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
           className="flex items-center gap-6"
         >
           <Logo />
@@ -93,11 +91,11 @@ export default function Navbar() {
         <div className="hidden md:flex gap-2 items-center">
           {/* Search with ⌘K hint */}
           <motion.button
-            whileHover={reduceMotion ? undefined : { scale: 1.05 }}
-            whileTap={reduceMotion ? undefined : { scale: 0.95 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setShowSearch(true)}
             aria-label={t.search}
-            className="h-10 px-3 bg-white/50 dark:bg-stone-800/50 rounded-xl hover:bg-cheese-200/70 dark:hover:bg-stone-700 transition-all duration-200 ease-theme text-cheese-800 dark:text-cheese-200 flex items-center gap-2"
+            className="icon-btn h-10 px-3 duration-200 flex items-center gap-2"
           >
             <Search size={18} />
             <kbd className="hidden lg:inline text-[10px] font-bold text-cheese-800/30 dark:text-cheese-200/25 bg-cheese-100/50 dark:bg-stone-700/50 px-1.5 py-0.5 rounded-md border border-cheese-200/40 dark:border-stone-600/40">
@@ -117,9 +115,9 @@ export default function Navbar() {
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              whileHover={reduceMotion ? undefined : { scale: 1.08, rotate: 3 }}
-              whileTap={reduceMotion ? undefined : { scale: 0.92 }}
-              className="h-10 w-10 p-2 bg-white/50 dark:bg-stone-800/50 rounded-xl hover:bg-cheese-200/70 dark:hover:bg-stone-700 transition-colors duration-200 ease-theme text-cheese-800 dark:text-cheese-200 flex items-center justify-center"
+              whileHover={{ scale: 1.08, rotate: 3 }}
+              whileTap={{ scale: 0.92 }}
+              className="icon-btn h-10 w-10 duration-200 flex items-center justify-center"
               aria-label={label}
             >
               <Icon size={18} aria-hidden="true" />

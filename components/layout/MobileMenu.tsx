@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Github, Mail, X, Home, ExternalLink, Hash, CalendarDays, Monitor, Moon, Sun, Search, User } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useI18n } from '@/hooks/useI18n';
+import { useLocale, switchLocalePath } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
 import { Locale } from '@/types';
 import Logo from '@/components/ui/Logo';
@@ -20,9 +21,9 @@ interface MobileMenuProps {
 }
 
 export default function MobileMenu({ showMobileMenu, setShowMobileMenu, onOpenSearch }: MobileMenuProps) {
-  const params = useParams();
+  const pathname = usePathname();
   const { theme, setTheme } = useTheme();
-  const { locale, setLocale, _hasHydrated } = useI18n();
+  const { setLocale } = useI18n();
   const [mounted, setMounted] = useState(false);
   const reduceMotion = useReducedMotion();
 
@@ -45,8 +46,7 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu, onOpenSe
     }
   };
 
-  const urlLocale = (params?.lang as Locale) || undefined;
-  const currentLocale = urlLocale || (_hasHydrated ? locale : 'zh');
+  const currentLocale = useLocale();
   const t = (translations as any)[currentLocale] ?? translations['zh'];
 
   const languages: { code: Locale; name: string }[] = [
@@ -55,12 +55,8 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu, onOpenSe
     { code: 'ja', name: '日本語' },
   ];
 
-  const getLangLink = (langCode: string) => {
-    if (params?.slug) {
-      return `/${langCode}/${params.slug}`;
-    }
-    return `/${langCode}`;
-  };
+  // 切换语言时保留当前子路径（归档、标签、文章页等）
+  const getLangLink = (langCode: Locale) => switchLocalePath(pathname, langCode);
 
   if (!mounted) return null;
 

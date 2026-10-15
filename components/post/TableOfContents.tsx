@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { List, X, ChevronRight } from 'lucide-react';
 import { Heading } from '@/lib/parser';
-import { useI18n } from '@/hooks/useI18n';
+import { useLocale } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
 import { Locale } from '@/types';
 
@@ -14,8 +14,7 @@ interface TableOfContentsProps {
 }
 
 export default function TableOfContents({ headings }: TableOfContentsProps) {
-  const { locale, _hasHydrated } = useI18n();
-  const currentLocale = (_hasHydrated ? locale : 'zh') as Locale;
+  const currentLocale = useLocale();
   const t = translations[currentLocale] ?? translations['zh'];
   const reduceMotion = useReducedMotion();
 
@@ -120,7 +119,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
                 className={`
                   w-full text-left text-xs leading-snug py-1.5 px-2 rounded-lg transition-all duration-200 group
                   ${isActive
-                    ? 'text-cheese-600 dark:text-cheese-400 font-bold bg-cheese-500/10 dark:bg-stone-850/60'
+                    ? 'text-cheese-600 dark:text-cheese-400 font-bold bg-cheese-500/10 dark:bg-stone-800/60'
                     : 'text-cheese-900/50 dark:text-cheese-200/40 hover:text-cheese-700 dark:hover:text-cheese-300 hover:bg-cheese-50/50 dark:hover:bg-stone-800/30 font-semibold'
                   }
                 `}
@@ -129,7 +128,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
                   {isActive && (
                     <ChevronRight className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-cheese-500" />
                   )}
-                  <span className={`${!isActive ? 'ml-4.5' : ''} line-clamp-2`}>{text}</span>
+                  <span className={`${!isActive ? 'ml-[18px]' : ''} line-clamp-2`}>{text}</span>
                 </span>
               </button>
             </li>
@@ -157,7 +156,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
         <div className="xl:hidden">
           <motion.button
             onClick={() => setMobileOpen(true)}
-            whileTap={reduceMotion ? undefined : { scale: 0.95 }}
+            whileTap={{ scale: 0.95 }}
             aria-label={t.toc}
             className="fixed bottom-[88px] right-6 z-40 w-12 h-12 bg-cheese-500 text-white rounded-full shadow-lg shadow-cheese-500/30 flex items-center justify-center hover:bg-cheese-600 transition-colors"
           >

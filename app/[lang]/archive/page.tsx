@@ -3,7 +3,7 @@ import { Locale, Post } from '@/types';
 import { translations } from '@/lib/translations';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, Calendar, Inbox } from 'lucide-react';
+import { ArrowLeft, Calendar } from 'lucide-react';
 import EmptyState from '@/components/ui/EmptyState';
 import { format } from 'date-fns';
 import { zhCN, enUS, ja as jaLocale } from 'date-fns/locale';
@@ -96,14 +96,14 @@ export default async function ArchivePage({ params }: PageProps) {
       {/* Timeline */}
       {groups.length === 0 ? (
         <div className="py-12">
-          <EmptyState message={t.noPosts} icon={Inbox} actionHref={`/${params.lang}`} actionLabel={t.backToHome} />
+          <EmptyState message={t.noPosts} actionHref={`/${params.lang}`} actionLabel={t.backToHome} />
         </div>
       ) : (
         <div className="relative border-l-2 border-cheese-200 dark:border-stone-800 space-y-16 pl-8 ml-4 sm:ml-8 pb-20">
           {groups.map(({ year, months }) => (
             <section key={year} className="relative">
               {/* Year marker */}
-              <div className="absolute -left-[2.3rem] sm:-left-[2.8rem] w-8 h-8 rounded-full bg-cheese-100 dark:bg-stone-900 border-4 border-cheese-400 flex items-center justify-center shadow-[0_0_15px_rgba(255,179,0,0.5)] z-10 animate-cheese-glow">
+              <div className="absolute -left-[2.3rem] sm:-left-[2.8rem] w-8 h-8 rounded-full bg-cheese-100 dark:bg-stone-900 border-4 border-cheese-400 flex items-center justify-center shadow-[0_0_15px_theme(colors.cheese.600/50%)] z-10 animate-cheese-glow">
                 <div className="w-2 h-2 bg-cheese-600 rounded-full" />
               </div>
               
@@ -127,7 +127,7 @@ export default async function ArchivePage({ params }: PageProps) {
 
                           <Link
                             href={`/${params.lang}/${post.slug}`}
-                            className="block glass-panel hover:scale-[1.02] active:scale-95 rounded-2xl p-6 hover:shadow-[0_0_20px_rgba(255,179,0,0.15)] transition-all duration-300"
+                            className="block glass-panel hover:scale-[1.02] active:scale-95 rounded-2xl p-6 hover:shadow-[0_0_20px_theme(colors.cheese.600/15%)] transition-all duration-300"
                           >
                             <div className="flex flex-col sm:flex-row sm:items-baseline gap-4">
                               <span className="flex-shrink-0 text-sm font-bold text-cheese-500/80 dark:text-cheese-400/80 tabular-nums">

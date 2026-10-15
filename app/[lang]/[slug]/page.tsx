@@ -74,7 +74,10 @@ export async function generateMetadata({ params }: PageProps) {
 }
 
 export default async function BlogPost({ params }: PageProps) {
-  const post = await getPostBySlug(params.slug, params.lang);
+  const [post, allPosts] = await Promise.all([
+    getPostBySlug(params.slug, params.lang),
+    getPosts(params.lang),
+  ]);
 
   if (!post) {
     notFound();
@@ -104,7 +107,7 @@ export default async function BlogPost({ params }: PageProps) {
   return (
     <div className="relative">
       <SchemaOrg schema={jsonLd} />
-      <PostContent initialPost={post} slug={params.slug} />
+      <PostContent post={post} allPosts={allPosts} slug={params.slug} />
     </div>
   );
 }

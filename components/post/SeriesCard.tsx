@@ -1,7 +1,7 @@
 'use client';
 
 import { Post } from '@/types';
-import { useI18n } from '@/hooks/useI18n';
+import { useLocale } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
 import { Layers, ChevronRight, ChevronLeft, List } from 'lucide-react';
 import Link from 'next/link';
@@ -13,8 +13,7 @@ interface SeriesCardProps {
 }
 
 export default function SeriesCard({ currentPost, seriesPosts }: SeriesCardProps) {
-  const { locale, _hasHydrated } = useI18n();
-  const currentLocale = _hasHydrated ? locale : 'zh';
+  const currentLocale = useLocale();
   const t = (translations as any)[currentLocale] ?? translations['zh'];
 
   if (!currentPost.series || seriesPosts.length <= 1) return null;

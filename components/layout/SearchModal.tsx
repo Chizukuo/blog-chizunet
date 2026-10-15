@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Command, FileText, Tag, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Fuse from 'fuse.js';
-import { useI18n } from '@/hooks/useI18n';
+import { useLocale } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
 import { createPortal } from 'react-dom';
 
@@ -25,7 +25,9 @@ interface SearchModalProps {
 export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchItem[]>([]);
-  const [fuse, setFuse] = useState<Fuse<SearchItem> | null>(null);
+  // 每种语言一份索引；切换语言后重新加载
+  const [index, setIndex] = useState<{ locale: string; items: SearchItem[]; fuse: Fuse<SearchItem> } | null>(null);
+  const fuse = index?.fuse ?? null;
   const [loading, setLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -36,31 +38,44 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   useEffect(() => {
     setMounted(true);
   }, []);
-  const { locale, _hasHydrated } = useI18n();
-  const currentLocale = _hasHydrated ? locale : 'zh';
+  const currentLocale = useLocale();
   const t = (translations as any)[currentLocale] ?? translations['zh'];
 
-  // Fetch search index and initialize Fuse.js when modal opens
+  // Fetch search index and initialize Fuse.js when modal opens (or the locale changes)
   useEffect(() => {
-    if (isOpen && !fuse) {
-      setLoading(true);
-      fetch(`/search-${currentLocale}.json`)
-        .then(res => res.json())
-        .then(data => {
-          const fuseOptions = {
-            keys: ['title', 'description', 'tags'],
-            includeScore: true,
-            threshold: 0.4, // Adjust threshold for more/less fuzzy search
-          };
-          setFuse(new Fuse(data, fuseOptions));
-          setLoading(false);
-        })
-        .catch(err => {
-          console.error('Failed to load search index', err);
-          setLoading(false);
-        });
-    }
-  }, [isOpen, fuse, currentLocale]);
+    if (!isOpen || index?.locale === currentLocale) return;
+    let cancelled = false;
+    setLoading(true);
+    fetch(`/search-${currentLocale}.json`)
+      .then(res => (res.ok ? res.json() : []))
+      .then((data: SearchItem[]) => {
+        if (cancelled) return;
+        const items = Array.isArray(data) ? data : [];
+        const fuseOptions = {
+          keys: ['title', 'description', 'tags'],
+          includeScore: true,
+          threshold: 0.4, // Adjust threshold for more/less fuzzy search
+        };
+        setIndex({ locale: currentLocale, items, fuse: new Fuse(items, fuseOptions) });
+      })
+      .catch(err => console.error('Failed to load search index', err))
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, index?.locale, currentLocale]);
+
+  // 推荐标签：取当前语言文章中最常用的标签
+  const suggestedTags = useMemo(() => {
+    const counts = new Map<string, number>();
+    index?.items.forEach(item => item.tags.forEach(tag => counts.set(tag, (counts.get(tag) ?? 0) + 1)));
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([tag]) => tag);
+  }, [index]);
 
   // Detect OS for shortcut display
   useEffect(() => {
@@ -139,7 +154,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300, mass: 0.8 }}
-            className="relative z-[110] w-full max-w-2xl bg-white dark:bg-stone-900 rounded-[2.5rem] shadow-[0_32px_128px_-16px_rgba(0,0,0,0.3)] overflow-hidden border border-cheese-200 dark:border-stone-800"
+            className="relative z-[110] w-full max-w-2xl bg-white dark:bg-stone-900 rounded-panel shadow-[0_32px_128px_-16px_rgba(0,0,0,0.3)] overflow-hidden border border-cheese-200 dark:border-stone-800"
           >
             {/* Search Input Area */}
             <div className="relative group/input flex items-center p-6 border-b border-cheese-200 dark:border-stone-800">
@@ -159,7 +174,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 id="site-search"
                 autoFocus
                 aria-label={t.search || 'Search posts'}
-                placeholder={t.search || "Search posts..."}
+                placeholder={t.searchPlaceholder}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="flex-grow bg-transparent border-none outline-none text-xl font-black text-cheese-950 dark:text-stone-100 placeholder-cheese-300 dark:placeholder-stone-700 search-input-no-outline"
@@ -171,6 +186,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 </span>
                 <button 
                   onClick={onClose}
+                  aria-label={t.close}
                   className="p-2.5 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-500 rounded-2xl transition-all duration-300 group/close"
                 >
                   <X size={20} className="text-stone-400 group-hover/close:rotate-90 transition-transform duration-300" />
@@ -278,7 +294,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 >
                   <div className="relative w-24 h-24 mx-auto mb-6">
                     <div className="absolute inset-0 bg-cheese-200 dark:bg-cheese-900/20 blur-2xl rounded-full animate-pulse" />
-                    <div className="relative w-full h-full bg-white dark:bg-stone-800 rounded-[2rem] flex items-center justify-center border border-cheese-100 dark:border-stone-700 shadow-xl">
+                    <div className="relative w-full h-full bg-white dark:bg-stone-800 rounded-card flex items-center justify-center border border-cheese-100 dark:border-stone-700 shadow-xl">
                       <Search size={40} className="text-cheese-300 dark:text-stone-600" />
                     </div>
                   </div>
@@ -287,14 +303,14 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     {t.noResultsDesc || "Maybe try a different keyword? We couldn't find any secrets matching that."}
                   </p>
                 </motion.div>
-              ) : (
+              ) : suggestedTags.length > 0 ? (
                 <div className="p-8">
                   <div className="flex items-center gap-3 mb-6 px-2">
                     <div className="w-1.5 h-4 bg-cheese-500 rounded-full animate-cheese-glow" />
                     <p className="text-xs font-black text-cheese-600 dark:text-cheese-400 uppercase tracking-[0.2em]">{t.quickSearch || "Recommended Tags"}</p>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {['Next.js', 'React', 'CSS', 'Cheese', 'Blog', 'Tailwind'].map((suggested, idx) => (
+                    {suggestedTags.map((suggested, idx) => (
                       <motion.button
                         key={suggested}
                         initial={{ opacity: 0, y: 10 }}
@@ -309,14 +325,14 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     ))}
                   </div>
                 </div>
-              )}
+              ) : null}
             </div>
 
             {/* Footer */}
             <div className="p-3 bg-cheese-50 dark:bg-stone-950 border-t border-cheese-200 dark:border-stone-800 flex justify-center gap-6 text-[10px] font-bold text-stone-500 dark:text-stone-400">
-              <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 bg-white dark:bg-stone-800 rounded border border-stone-200 dark:border-stone-700 shadow-sm">Enter</kbd> to select</span>
-              <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 bg-white dark:bg-stone-800 rounded border border-stone-200 dark:border-stone-700 shadow-sm">↑↓</kbd> to navigate</span>
-              <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 bg-white dark:bg-stone-800 rounded border border-stone-200 dark:border-stone-700 shadow-sm">Esc</kbd> to close</span>
+              <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 bg-white dark:bg-stone-800 rounded border border-stone-200 dark:border-stone-700 shadow-sm">Enter</kbd> {t.searchHintSelect}</span>
+              <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 bg-white dark:bg-stone-800 rounded border border-stone-200 dark:border-stone-700 shadow-sm">↑↓</kbd> {t.searchHintNavigate}</span>
+              <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 bg-white dark:bg-stone-800 rounded border border-stone-200 dark:border-stone-700 shadow-sm">Esc</kbd> {t.searchHintClose}</span>
             </div>
           </motion.div>
         </div>

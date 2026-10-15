@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Share2, Check } from 'lucide-react';
-import { useI18n } from '@/hooks/useI18n';
+import { useLocale } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
 import { Locale } from '@/types';
 
@@ -14,8 +14,7 @@ interface ShareButtonProps {
 export default function ShareButton({ title, url }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
   const [animating, setAnimating] = useState(false);
-  const { locale, _hasHydrated } = useI18n();
-  const currentLocale = (_hasHydrated ? locale : 'zh') as Locale;
+  const currentLocale = useLocale();
   const t = translations[currentLocale] ?? translations['zh'];
 
   const handleShare = async () => {
@@ -43,7 +42,7 @@ export default function ShareButton({ title, url }: ShareButtonProps) {
         onClick={handleShare}
         aria-label={copied ? t.copied : t.sharePost}
         className={`relative group flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all duration-300 transform
-          ${animating ? 'scale-95 animate-cheese-glow' : 'hover:scale-105 hover:shadow-[0_0_20px_rgba(255,179,0,0.3)]'}
+          ${animating ? 'scale-95 animate-cheese-glow' : 'hover:scale-105 hover:shadow-[0_0_20px_theme(colors.cheese.600/30%)]'}
           bg-white/80 dark:bg-stone-800/80 backdrop-blur-md border border-cheese-200/50 dark:border-stone-700/50
           text-cheese-700 dark:text-cheese-300 shadow-xl overflow-hidden`}
       >

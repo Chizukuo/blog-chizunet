@@ -6,10 +6,9 @@ import { format } from 'date-fns';
 import { zhCN, enUS, ja } from 'date-fns/locale';
 import { Post, Locale } from '@/types';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { calcReadingTime } from '@/lib/reading';
 import { translations } from '@/lib/translations';
-import { useRouter } from 'next/navigation';
 
 interface PostCardProps {
   post: Post;
@@ -31,9 +30,7 @@ function shouldOptimize(url: string): boolean {
 }
 
 export default function PostCard({ post, lang, priority, featured }: PostCardProps) {
-  const reduceMotion = useReducedMotion();
   const t = translations[lang];
-  const router = useRouter();
 
   const snippet = post.description || (post.body.slice(0, 150).replace(/[#*`]/g, '') + '...');
   const readingMinutes = calcReadingTime(post.body, lang);
@@ -43,26 +40,16 @@ export default function PostCard({ post, lang, priority, featured }: PostCardPro
 
   return (
     <motion.div
-      whileHover={reduceMotion ? undefined : { y: -6, scale: 1.015 }}
-      whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+      whileHover={{ y: -6, scale: 1.015 }}
+      whileTap={{ scale: 0.98 }}
       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
       className="h-full"
     >
       <article
-        role="link"
-        tabIndex={0}
-        aria-label={`${t.readMore}: ${post.title}`}
         aria-labelledby={`post-title-${post.id}`}
-        onClick={() => router.push(postHref)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            router.push(postHref);
-          }
-        }}
         className={`
           bg-white/80 dark:bg-stone-800/40 backdrop-blur-sm
-          rounded-2xl sm:rounded-[2rem]
+          rounded-2xl sm:rounded-card
           shadow-sm sm:shadow-lg
           hover:shadow-xl sm:hover:shadow-2xl hover:shadow-cheese-500/[0.06] dark:hover:shadow-black/30
           border border-cheese-200/50 dark:border-stone-700/40
@@ -70,9 +57,16 @@ export default function PostCard({ post, lang, priority, featured }: PostCardPro
           flex ${featured ? 'flex-col md:flex-row' : 'flex-col'} h-full
           relative overflow-hidden group
           transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]
-          cursor-pointer
         `}
       >
+        {/* 整卡点击区域：真实链接，支持新标签页打开 / 复制链接；键盘焦点交给标题链接，避免重复 */}
+        <Link
+          href={postHref}
+          tabIndex={-1}
+          aria-hidden="true"
+          className="absolute inset-0 z-[5]"
+        />
+
         {/* Cover Image */}
         {post.coverImage && (
           <div className={`relative overflow-hidden ${
@@ -97,7 +91,7 @@ export default function PostCard({ post, lang, priority, featured }: PostCardPro
         )}
 
         {/* Content */}
-        <div className={`relative z-10 flex flex-col flex-1 p-5 sm:p-7 ${featured ? 'md:p-8 justify-center' : ''}`}>
+        <div className={`relative z-10 flex flex-col flex-1 p-5 sm:p-7 pointer-events-none ${featured ? 'md:p-8 justify-center' : ''}`}>
           {/* Category badge */}
           {post.category && (
             <div className={`${featured ? 'mb-4' : 'absolute top-0 right-0 z-20'}`}>
@@ -143,8 +137,7 @@ export default function PostCard({ post, lang, priority, featured }: PostCardPro
           >
             <Link
               href={postHref}
-              onClick={(e) => e.stopPropagation()}
-              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cheese-500 rounded"
+              className="pointer-events-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cheese-500 rounded"
             >
               {post.title}
             </Link>
@@ -163,8 +156,7 @@ export default function PostCard({ post, lang, priority, featured }: PostCardPro
               <Link
                 key={label.id}
                 href={`/${lang}/tags/${encodeURIComponent(label.name)}`}
-                onClick={(e) => e.stopPropagation()}
-                className="text-xs font-bold px-3 py-1.5 bg-cheese-50/80 dark:bg-stone-700/60 backdrop-blur-sm text-cheese-700 dark:text-cheese-300 rounded-xl border border-cheese-200/60 dark:border-stone-600 shadow-sm hover:bg-cheese-100 dark:hover:bg-stone-600 hover:border-cheese-300/80 transition-all duration-200"
+                className="pointer-events-auto text-xs font-bold px-3 py-1.5 bg-cheese-50/80 dark:bg-stone-700/60 backdrop-blur-sm text-cheese-700 dark:text-cheese-300 rounded-xl border border-cheese-200/60 dark:border-stone-600 shadow-sm hover:bg-cheese-100 dark:hover:bg-stone-600 hover:border-cheese-300/80 transition-all duration-200"
               >
                 #{label.name}
               </Link>
@@ -172,7 +164,7 @@ export default function PostCard({ post, lang, priority, featured }: PostCardPro
           </div>
 
           {/* Arrow indicator */}
-          <div className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300 text-cheese-600 dark:text-cheese-400">
+          <div className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 text-cheese-600 dark:text-cheese-400">
             <ArrowRight className="w-5 h-5" />
           </div>
         </div>

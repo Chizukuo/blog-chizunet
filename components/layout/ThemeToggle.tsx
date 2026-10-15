@@ -2,9 +2,9 @@
 
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Monitor, Moon, Sun } from 'lucide-react';
-import { useI18n } from '@/hooks/useI18n';
+import { useLocale } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
 
 /**
@@ -14,8 +14,6 @@ import { translations } from '@/lib/translations';
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const { locale, _hasHydrated } = useI18n();
-  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     setMounted(true);
@@ -27,7 +25,7 @@ export default function ThemeToggle() {
     setTheme(modes[nextIndex]);
   };
 
-  const currentLocale = _hasHydrated ? locale : 'zh';
+  const currentLocale = useLocale();
   const t = (translations as any)[currentLocale] ?? translations['zh'];
 
   const getThemeKey = () => {
@@ -43,19 +41,19 @@ export default function ThemeToggle() {
 
   return (
     <motion.button
-      whileHover={reduceMotion ? undefined : { scale: 1.08 }}
-      whileTap={reduceMotion ? undefined : { scale: 0.92 }}
+      whileHover={{ scale: 1.08 }}
+      whileTap={{ scale: 0.92 }}
       onClick={cycleTheme}
       aria-label={t.switchTheme}
-      className="h-10 w-10 p-2 bg-white/50 dark:bg-stone-800/50 rounded-xl hover:bg-cheese-200 dark:hover:bg-stone-700 transition-colors duration-200 ease-theme text-cheese-800 dark:text-cheese-200 relative group flex items-center justify-center overflow-hidden"
+      className="icon-btn h-10 w-10 duration-200 relative group flex items-center justify-center overflow-hidden"
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={getThemeKey()}
-          initial={reduceMotion ? undefined : { rotate: -90, scale: 0, opacity: 0 }}
-          animate={reduceMotion ? undefined : { rotate: 0, scale: 1, opacity: 1 }}
-          exit={reduceMotion ? undefined : { rotate: 90, scale: 0, opacity: 0 }}
-          transition={reduceMotion ? undefined : {
+          initial={{ rotate: -90, scale: 0, opacity: 0 }}
+          animate={{ rotate: 0, scale: 1, opacity: 1 }}
+          exit={{ rotate: 90, scale: 0, opacity: 0 }}
+          transition={{
             type: 'spring',
             stiffness: 400,
             damping: 20,

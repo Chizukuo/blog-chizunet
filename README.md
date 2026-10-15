@@ -110,11 +110,19 @@ https://.../cover.png
 
 ---
 
+## 🎨 设计规范
+
+博客与主站 chizunet.cc 共用一套设计令牌（色彩、圆角、动效），组件、多语言与可访问性约定见 [DESIGN.md](./DESIGN.md)。
+
+---
+
 ## 目录说明 🔍
 
 - `app/` - Next.js app 路由（含 i18n）
 - `components/` - UI / 布局 / Post 组件
 - `lib/github.ts` - 从 GitHub Issues 解析与获取文章的逻辑
+- `hooks/useLocale.ts` - 当前语言（以 URL 为准）与语言切换工具
+- `scripts/generate-search-index.cjs` - 构建时生成 `public/search-{zh,en,ja}.json` 搜索索引
 - `public/styles/` - Giscus 自定义样式等静态资源
 - `scripts/vercel-ignore-build.sh` - 部署相关辅助脚本
 

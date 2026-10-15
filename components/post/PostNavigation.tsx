@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { Post, Locale } from '@/types';
-import { useI18n } from '@/hooks/useI18n';
+import { useLocale } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 interface PostNavigationProps {
   currentPost: Post;
@@ -17,10 +17,8 @@ interface PostNavigationProps {
  * 使用 glass-panel + spring hover 动画
  */
 export default function PostNavigation({ currentPost, allPosts }: PostNavigationProps) {
-  const { locale, _hasHydrated } = useI18n();
-  const currentLocale = _hasHydrated ? locale : 'zh';
+  const currentLocale = useLocale();
   const t = (translations as any)[currentLocale] ?? translations['zh'];
-  const reduceMotion = useReducedMotion();
 
   // Sort posts by date descending (newest first, like the list)
   const sorted = [...allPosts].sort(
@@ -44,8 +42,8 @@ export default function PostNavigation({ currentPost, allPosts }: PostNavigation
       {/* Previous (newer) */}
       {newerPost ? (
         <motion.div
-          whileHover={reduceMotion ? undefined : { y: -4, scale: 1.01 }}
-          whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+          whileHover={{ y: -4, scale: 1.01 }}
+          whileTap={{ scale: 0.98 }}
         >
           <Link
             href={`/${currentLocale}/${newerPost.slug}`}
@@ -72,8 +70,8 @@ export default function PostNavigation({ currentPost, allPosts }: PostNavigation
       {/* Next (older) */}
       {olderPost ? (
         <motion.div
-          whileHover={reduceMotion ? undefined : { y: -4, scale: 1.01 }}
-          whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+          whileHover={{ y: -4, scale: 1.01 }}
+          whileTap={{ scale: 0.98 }}
         >
           <Link
             href={`/${currentLocale}/${olderPost.slug}`}

@@ -5,7 +5,7 @@ import { translations } from '@/lib/translations';
 import { Post, Locale } from '@/types';
 import PostCard from './PostCard';
 import PostCardSkeleton from './PostCardSkeleton';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Hash, Layers, Sparkles, Inbox } from 'lucide-react';
 import EmptyState from '@/components/ui/EmptyState';
 
@@ -20,7 +20,6 @@ interface PostListProps {
  * Apple 风格：交错动画、spring 曲线、流畅交互
  */
 export default function PostList({ initialPosts, lang, stats }: PostListProps) {
-  const reduceMotion = useReducedMotion();
   const currentLang: Locale = (lang && ['zh', 'en', 'ja'].includes(lang)) ? lang : 'zh';
   const t = translations[currentLang] ?? translations['zh'];
   const [posts, setPosts] = useState<Post[]>(initialPosts);
@@ -92,9 +91,9 @@ export default function PostList({ initialPosts, lang, stats }: PostListProps) {
       <section className="text-left space-y-6 sm:space-y-8 py-8 sm:py-12 max-w-4xl">
         <motion.h1
           key={`title-${currentLang}`}
-          initial={reduceMotion ? undefined : { opacity: 0, y: 30 }}
-          animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-          transition={reduceMotion ? undefined : { ...springTransition, delay: 0 }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...springTransition, delay: 0 }}
           className="font-black leading-none tracking-tighter"
         >
           <span className="block text-3xl md:text-5xl text-cheese-900/40 dark:text-cheese-100/40 mb-2 font-bold">
@@ -107,9 +106,9 @@ export default function PostList({ initialPosts, lang, stats }: PostListProps) {
 
         <motion.p
           key={`desc-${currentLang}`}
-          initial={reduceMotion ? undefined : { opacity: 0, y: 20 }}
-          animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-          transition={reduceMotion ? undefined : { ...springTransition, delay: 0.1 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...springTransition, delay: 0.1 }}
           className="text-lg md:text-2xl text-cheese-900/80 dark:text-cheese-200/80 font-medium leading-relaxed"
         >
           {t.description}
@@ -118,9 +117,9 @@ export default function PostList({ initialPosts, lang, stats }: PostListProps) {
         {/* Stats bar */}
         {statItems.length > 0 && (
           <motion.div
-            initial={reduceMotion ? undefined : { opacity: 0, y: 16 }}
-            animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-            transition={reduceMotion ? undefined : { ...springTransition, delay: 0.2 }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...springTransition, delay: 0.2 }}
             className="flex flex-wrap items-center gap-3 sm:gap-4"
           >
             {statItems.map(({ icon: Icon, value, label }, i) => (
@@ -144,9 +143,9 @@ export default function PostList({ initialPosts, lang, stats }: PostListProps) {
             posts.map((post, index) => (
               <motion.div
                 key={post.id}
-                initial={reduceMotion ? undefined : { opacity: 0, y: 20 }}
-                animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-                transition={reduceMotion ? undefined : {
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
                   ...springTransition,
                   delay: Math.min(index * 0.06, 0.5),
                 }}
@@ -183,8 +182,8 @@ export default function PostList({ initialPosts, lang, stats }: PostListProps) {
       {/* End of list message */}
       {!hasMore && posts.length > 0 && (
         <motion.div
-          initial={reduceMotion ? undefined : { opacity: 0 }}
-          animate={reduceMotion ? undefined : { opacity: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           className="flex items-center justify-center gap-2 py-8 text-sm font-medium text-cheese-900/30 dark:text-cheese-200/25"
         >
           <Sparkles className="w-4 h-4" />

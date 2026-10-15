@@ -5,7 +5,7 @@ export default function NotFound() {
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center text-center space-y-8 px-4">
       {/* Icon instead of 3D model */}
-      <div className="w-24 h-24 flex items-center justify-center rounded-[2rem] bg-cheese-500/10 dark:bg-cheese-500/5 border border-cheese-300/30 dark:border-stone-700/30 text-cheese-500 shadow-inner mb-2 relative">
+      <div className="w-24 h-24 flex items-center justify-center rounded-card bg-cheese-500/10 dark:bg-cheese-500/5 border border-cheese-300/30 dark:border-stone-700/30 text-cheese-500 shadow-inner mb-2 relative">
         <FileQuestion className="w-12 h-12" strokeWidth={1.5} />
       </div>
 

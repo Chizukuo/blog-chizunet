@@ -141,7 +141,7 @@ export default async function AboutPage({ params }: PageProps) {
         </div>
 
         {/* Bio section */}
-        <section className="bg-white/60 dark:bg-stone-900/50 backdrop-blur-md rounded-[2.5rem] border border-cheese-200/50 dark:border-stone-800/50 p-8 sm:p-10 shadow-sm transition-all hover:shadow-md hover:border-cheese-300/60 dark:hover:border-stone-700/55 duration-300">
+        <section className="bg-white/60 dark:bg-stone-900/50 backdrop-blur-md rounded-panel border border-cheese-200/50 dark:border-stone-800/50 p-8 sm:p-10 shadow-sm transition-all hover:shadow-md hover:border-cheese-300/60 dark:hover:border-stone-700/55 duration-300">
           <h2 className="text-2xl sm:text-3xl font-black text-cheese-950 dark:text-cheese-50 tracking-tight mb-6">
             {content.greeting}
           </h2>
@@ -175,7 +175,7 @@ export default async function AboutPage({ params }: PageProps) {
         </section>
 
         {/* Tech stack */}
-        <section className="bg-white/60 dark:bg-stone-900/50 backdrop-blur-md rounded-[2.5rem] border border-cheese-200/50 dark:border-stone-800/50 p-8 sm:p-10 shadow-sm transition-all hover:shadow-md hover:border-cheese-300/60 dark:hover:border-stone-700/55 duration-300">
+        <section className="bg-white/60 dark:bg-stone-900/50 backdrop-blur-md rounded-panel border border-cheese-200/50 dark:border-stone-800/50 p-8 sm:p-10 shadow-sm transition-all hover:shadow-md hover:border-cheese-300/60 dark:hover:border-stone-700/55 duration-300">
           <h2 className="text-xs font-black text-cheese-950 dark:text-cheese-50 tracking-tight mb-5 uppercase tracking-[0.2em] text-cheese-600 dark:text-cheese-400">
             {content.techTitle}
           </h2>
@@ -192,7 +192,7 @@ export default async function AboutPage({ params }: PageProps) {
         </section>
 
         {/* Contact */}
-        <section className="bg-white/60 dark:bg-stone-900/50 backdrop-blur-md rounded-[2.5rem] border border-cheese-200/50 dark:border-stone-800/50 p-8 sm:p-10 shadow-sm transition-all hover:shadow-md hover:border-cheese-300/60 dark:hover:border-stone-700/55 duration-300">
+        <section className="bg-white/60 dark:bg-stone-900/50 backdrop-blur-md rounded-panel border border-cheese-200/50 dark:border-stone-800/50 p-8 sm:p-10 shadow-sm transition-all hover:shadow-md hover:border-cheese-300/60 dark:hover:border-stone-700/55 duration-300">
           <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-cheese-600 dark:text-cheese-400 mb-5">
             {content.contactTitle}
           </h2>

@@ -4,7 +4,7 @@ import { Locale } from '@/types';
 import { translations } from '@/lib/translations';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, Hash, Inbox } from 'lucide-react';
+import { ArrowLeft, Hash } from 'lucide-react';
 import EmptyState from '@/components/ui/EmptyState';
 import { notFound } from 'next/navigation';
 
@@ -80,7 +80,7 @@ export default async function TagPage({ params }: PageProps) {
       </div>
 
       {/* Tag cloud */}
-      <div className="mb-12 bg-white/50 dark:bg-stone-900/50 backdrop-blur-md rounded-[2rem] border border-cheese-200/50 dark:border-stone-800/50 p-6 sm:p-8">
+      <div className="mb-12 bg-white/50 dark:bg-stone-900/50 backdrop-blur-md rounded-card border border-cheese-200/50 dark:border-stone-800/50 p-6 sm:p-8">
         <h2 className="text-xs font-black uppercase tracking-widest text-cheese-900/40 dark:text-cheese-100/40 mb-5">
           {t.tags}
         </h2>
@@ -118,7 +118,7 @@ export default async function TagPage({ params }: PageProps) {
         </section>
       ) : (
         <div className="py-6">
-          <EmptyState message={t.noPostsWithTag} icon={Inbox} actionHref={`/${params.lang}/tags`} actionLabel={t.tags} />
+          <EmptyState message={t.noPostsWithTag} actionHref={`/${params.lang}/tags`} actionLabel={t.tags} />
         </div>
       )}
     </div>

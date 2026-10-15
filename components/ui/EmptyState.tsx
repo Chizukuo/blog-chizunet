@@ -3,13 +3,14 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { Inbox, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useI18n } from '@/hooks/useI18n';
+import { useLocale } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
 import { Locale } from '@/types';
 
 interface EmptyStateProps {
   message: string;
   description?: string;
+  /** 仅限客户端组件传入；服务端组件无法向客户端组件传递组件函数，使用默认图标即可 */
   icon?: React.ComponentType<any>;
   actionLabel?: string;
   actionHref?: string;
@@ -23,8 +24,7 @@ export default function EmptyState({
   actionHref,
 }: EmptyStateProps) {
   const reduceMotion = useReducedMotion();
-  const { locale, _hasHydrated } = useI18n();
-  const currentLocale = (_hasHydrated ? locale : 'zh') as Locale;
+  const currentLocale = useLocale();
   const t = translations[currentLocale] ?? translations['zh'];
 
   return (
@@ -32,7 +32,7 @@ export default function EmptyState({
       initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 16 }}
       animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 260, damping: 25 }}
-      className="w-full py-20 px-6 text-center max-w-xl mx-auto rounded-[2.5rem] bg-white/40 dark:bg-stone-900/30 backdrop-blur-xl border border-cheese-200/50 dark:border-stone-800/40 shadow-xl relative overflow-hidden"
+      className="w-full py-20 px-6 text-center max-w-xl mx-auto rounded-panel bg-white/40 dark:bg-stone-900/30 backdrop-blur-xl border border-cheese-200/50 dark:border-stone-800/40 shadow-xl relative overflow-hidden"
     >
       {/* Decorative ambient glowing circles */}
       <div className="absolute -top-12 -left-12 w-32 h-32 rounded-full bg-cheese-500/10 dark:bg-cheese-500/5 blur-2xl pointer-events-none" />

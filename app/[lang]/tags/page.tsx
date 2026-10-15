@@ -3,7 +3,7 @@ import { Locale } from '@/types';
 import { translations } from '@/lib/translations';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, Hash, Inbox } from 'lucide-react';
+import { ArrowLeft, Hash } from 'lucide-react';
 import EmptyState from '@/components/ui/EmptyState';
 
 interface PageProps {
@@ -61,10 +61,10 @@ export default async function TagsPage({ params }: PageProps) {
       {/* Tag cloud */}
       {allTags.length === 0 ? (
         <div className="py-6">
-          <EmptyState message={t.noPosts} icon={Inbox} actionHref={`/${params.lang}`} actionLabel={t.backToHome} />
+          <EmptyState message={t.noPosts} actionHref={`/${params.lang}`} actionLabel={t.backToHome} />
         </div>
       ) : (
-        <div className="bg-white/50 dark:bg-stone-900/50 backdrop-blur-md rounded-[2rem] border border-cheese-200/50 dark:border-stone-800/50 p-8 sm:p-12">
+        <div className="bg-white/50 dark:bg-stone-900/50 backdrop-blur-md rounded-card border border-cheese-200/50 dark:border-stone-800/50 p-8 sm:p-12">
           <div className="flex flex-wrap gap-3 sm:gap-4 justify-start items-baseline">
             {allTags.map(({ name, count }) => {
               const scale = 0.8 + (count / maxCount) * 0.85;

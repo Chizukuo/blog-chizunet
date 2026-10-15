@@ -3,15 +3,14 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ArrowUp } from 'lucide-react';
-import { useI18n } from '@/hooks/useI18n';
+import { useLocale } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
 import { Locale } from '@/types';
 
 export default function ScrollToTop() {
   const [visible, setVisible] = useState(false);
   const reduceMotion = useReducedMotion();
-  const { locale, _hasHydrated } = useI18n();
-  const currentLocale = (_hasHydrated ? locale : 'zh') as Locale;
+  const currentLocale = useLocale();
   const t = translations[currentLocale] ?? translations['zh'];
 
   useEffect(() => {
@@ -35,10 +34,10 @@ export default function ScrollToTop() {
           onClick={scrollToTop}
           aria-label={t.scrollToTop}
           className="fixed bottom-6 right-6 z-40 w-12 h-12 flex items-center justify-center rounded-full bg-cheese-500 hover:bg-cheese-600 text-white shadow-lg shadow-cheese-500/30 hover:shadow-cheese-600/30 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cheese-500 focus-visible:ring-offset-2"
-          whileHover={reduceMotion ? undefined : { scale: 1.1 }}
-          whileTap={reduceMotion ? undefined : { scale: 0.92 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.92 }}
         >
-          <ArrowUp className="w-5.5 h-5.5" strokeWidth={2.5} />
+          <ArrowUp className="w-[22px] h-[22px]" strokeWidth={2.5} />
         </motion.button>
       )}
     </AnimatePresence>

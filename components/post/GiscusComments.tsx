@@ -3,7 +3,7 @@
 import Giscus from '@giscus/react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { useI18n } from '@/hooks/useI18n';
+import { useLocale } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
 import { MessageSquare, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -16,15 +16,14 @@ interface GiscusCommentsProps {
 export default function GiscusComments({ slug }: GiscusCommentsProps) {
   const [mounted, setMounted] = useState(false);
   const { resolvedTheme } = useTheme();
-  const { locale, _hasHydrated } = useI18n();
-  const currentLocale = _hasHydrated ? locale : 'zh';
+  const currentLocale = useLocale();
   const t = translations[currentLocale];
   
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted || !_hasHydrated) return null;
+  if (!mounted) return null;
 
   const giscusLang = ({
     zh: 'zh-CN',
@@ -76,10 +75,10 @@ export default function GiscusComments({ slug }: GiscusCommentsProps) {
           <div className="h-px flex-grow bg-gradient-to-r from-cheese-300/30 via-cheese-200/20 to-transparent dark:from-stone-700/50 dark:via-stone-800/20 ml-6 rounded-full"></div>
         </div>
         
-        <div className="glass-panel rounded-[2rem] p-4 sm:p-6 md:p-8 shadow-2xl shadow-cheese-500/10 dark:shadow-black/20 border-cheese-200/60 dark:border-stone-700/50 overflow-hidden min-h-[300px]">
+        <div className="glass-panel rounded-card p-4 sm:p-6 md:p-8 shadow-2xl shadow-cheese-500/10 dark:shadow-black/20 border-cheese-200/60 dark:border-stone-700/50 overflow-hidden min-h-[300px]">
           <div className="w-full min-w-0">
             <Giscus
-              key={`${locale}-${resolvedTheme}-${slug}`}
+              key={`${currentLocale}-${resolvedTheme}-${slug}`}
               id="comments"
               repo={process.env.NEXT_PUBLIC_GISCUS_REPO as any}
               repoId={process.env.NEXT_PUBLIC_GISCUS_REPO_ID as string}

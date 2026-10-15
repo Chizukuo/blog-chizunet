@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { BookOpen, X, Type } from 'lucide-react';
-import { useI18n } from '@/hooks/useI18n';
+import { useLocale } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
 import { Locale } from '@/types';
 import dynamic from 'next/dynamic';
@@ -29,8 +29,7 @@ interface ReadingModeProps {
  * 按 ESC 退出
  */
 export default function ReadingMode({ content }: ReadingModeProps) {
-  const { locale, _hasHydrated } = useI18n();
-  const currentLocale = (_hasHydrated ? locale : 'zh') as Locale;
+  const currentLocale = useLocale();
   const t = translations[currentLocale] ?? translations['zh'];
   const reduceMotion = useReducedMotion();
 
@@ -98,7 +97,7 @@ export default function ReadingMode({ content }: ReadingModeProps) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: reduceMotion ? 0 : 0.3 }}
-                className="fixed inset-0 z-[100] bg-cheese-50 dark:bg-[#0c0a09]"
+                className="fixed inset-0 z-[100] bg-cheese-50 dark:bg-stone-950"
               />
 
               {/* Floating controls bar */}

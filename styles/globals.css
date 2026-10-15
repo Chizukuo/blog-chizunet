@@ -2,110 +2,212 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 8rem; /* Ensure scroll padding for anchor links */
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-  overflow-x: clip;
-  width: 100%;
-}
+/*
+ * 设计规范见 DESIGN.md（与主站 chizunet.cc 共用同一套令牌）。
+ * 颜色一律通过 Tailwind 令牌 / theme() 引用，不写裸十六进制值。
+ */
 
-/* Ensure all elements with IDs have proper scroll margin */
-[id] {
-  scroll-margin-top: 8rem;
-}
+/* ========== Base：全局基础 ========== */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 8rem; /* 锚点跳转时避开固定导航栏 */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    overflow-x: clip;
+    width: 100%;
+  }
 
-body {
-  margin: 0;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  @apply bg-cheese-50 dark:bg-[#0c0a09] text-cheese-950 dark:text-stone-200;
-  @apply transition-all duration-700 ease-theme-spring;
-  @apply selection:bg-cheese-300 selection:text-cheese-900 dark:selection:bg-cheese-500/30 dark:selection:text-cheese-100;
-  overflow-x: clip;
-  -webkit-overflow-scrolling: touch;
-  -webkit-tap-highlight-color: transparent;
-}
+  [id] {
+    scroll-margin-top: 8rem;
+  }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-}
+  body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    @apply bg-cheese-50 dark:bg-stone-950 text-cheese-950 dark:text-stone-200 theme-transition;
+    @apply selection:bg-cheese-300 selection:text-cheese-900 dark:selection:bg-cheese-500/30 dark:selection:text-cheese-100;
+    overflow-x: clip;
+    -webkit-overflow-scrolling: touch;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-::-webkit-scrollbar-track {
-  @apply bg-cheese-50 dark:bg-[#0c0a09];
-}
+  * {
+    touch-action: manipulation;
+    -webkit-user-drag: none;
+  }
 
-::-webkit-scrollbar-thumb {
-  @apply bg-cheese-500/50 dark:bg-stone-800;
-  border-radius: 5px;
-  border: 2px solid transparent;
-  background-clip: content-box;
-}
+  /* 键盘焦点：统一的芝士黄描边 */
+  :focus-visible {
+    outline: 3px solid theme('colors.cheese.500 / 90%');
+    outline-offset: 3px;
+    border-radius: 0.5rem;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-cheese-600 dark:bg-stone-700;
-}
+  img, video, canvas {
+    max-width: 100%;
+    height: auto;
+    -webkit-user-select: none;
+    user-select: none;
+  }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
+  button, a {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
+  /* 小屏触控目标 ≥ 44px；正文里的行内链接除外，避免打乱文字排版 */
+  @media (max-width: 640px) {
+    :is(button, a):where(:not(.prose *)) {
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0.375rem;
+    }
+  }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-cheese-200/50 dark:bg-stone-800/80 rounded-full border-2 border-transparent bg-clip-content;
-  transition: all 0.3s ease;
-}
+  input, textarea, select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0;
+  }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  @apply bg-cheese-400 dark:bg-stone-700;
-}
+  /* 滚动条 */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
 
-@media (hover: hover) and (pointer: fine) {
+  ::-webkit-scrollbar-track {
+    @apply bg-cheese-50 dark:bg-stone-950;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-cheese-500/50 dark:bg-stone-800 rounded-[5px] border-2 border-transparent bg-clip-content;
+  }
+
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-cheese-600 dark:bg-stone-700;
   }
 }
 
-/* Utility classes */
-.glass-panel {
-  @apply bg-white/70 dark:bg-stone-950/40;
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  backdrop-filter: blur(24px) saturate(180%);
-  @apply border border-white/50 dark:border-white/10;
-  @apply transition-all duration-500 ease-in-out;
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 20px 25px -5px rgba(255, 179, 0, 0.12),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+/* ========== Components：可复用组件类 ========== */
+@layer components {
+  /* 图标按钮：导航栏等处的方形图标按钮（与主站一致） */
+  .icon-btn {
+    @apply p-2 rounded-xl bg-white/50 dark:bg-stone-800/50 text-cheese-800 dark:text-cheese-200 hover:bg-cheese-200 dark:hover:bg-stone-700 theme-transition;
+  }
+
+  /* 毛玻璃面板 */
+  .glass-panel {
+    @apply bg-white/70 dark:bg-stone-950/40 border border-white/50 dark:border-white/10 transition-all duration-500 ease-in-out;
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    box-shadow:
+      0 4px 6px -1px rgb(0 0 0 / 0.1),
+      0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 20px 25px -5px theme('colors.cheese.600 / 12%'),
+      inset 0 0 0 1px rgb(255 255 255 / 0.4);
+  }
+
+  .dark .glass-panel {
+    box-shadow:
+      0 4px 6px -1px rgb(0 0 0 / 0.4),
+      0 10px 15px -3px rgb(0 0 0 / 0.4),
+      0 20px 50px -12px rgb(0 0 0 / 0.8),
+      inset 0 0 0 1px rgb(255 255 255 / 0.05);
+  }
+
+  @supports not (backdrop-filter: blur(10px)) {
+    .glass-panel {
+      @apply bg-white/95 dark:bg-stone-900/95;
+    }
+  }
+
+  /* 细滚动条（目录、搜索结果、阅读模式） */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-cheese-200/50 dark:bg-stone-800/80 rounded-full border-2 border-transparent bg-clip-content;
+    transition: all 0.3s ease;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-cheese-400 dark:bg-stone-700;
+  }
+
+  /* 搜索输入框：不显示默认描边，用柔和光晕表示焦点 */
+  .search-input-no-outline:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 6px theme('colors.cheese.500 / 8%'), 0 6px 20px rgb(0 0 0 / 0.08);
+    border-radius: 0.75rem;
+  }
+
+  /* Markdown 任务列表复选框 */
+  .checkbox-custom {
+    display: inline-block !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    @apply relative w-5 h-5 rounded-md border-2 cursor-default transition-all duration-200 mr-2 mt-1 flex-shrink-0;
+    border-color: theme('colors.cheese.400') !important;
+    background-color: theme('colors.cheese.100') !important;
+  }
+
+  .dark .checkbox-custom {
+    border-color: theme('colors.cheese.950') !important;
+    background-color: theme('colors.stone.900') !important;
+  }
+
+  .checkbox-custom:checked {
+    background-color: theme('colors.cheese.600') !important;
+    border-color: theme('colors.cheese.600') !important;
+  }
+
+  .checkbox-custom:checked::after {
+    content: '';
+    @apply absolute left-[5px] top-[1px] w-[6px] h-[10px] border-r-2 border-b-2 border-white rotate-45;
+  }
+
+  .task-list-item {
+    @apply flex items-start list-none !ml-0 !pl-0 mb-2;
+  }
+
+  .task-list-item input[type="checkbox"]:not(.checkbox-custom) {
+    display: none !important;
+  }
+
+  .task-list-item p {
+    @apply m-0 leading-relaxed;
+  }
 }
 
-.dark .glass-panel {
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.4),
-    0 10px 15px -3px rgba(0, 0, 0, 0.4),
-    0 20px 50px -12px rgba(0, 0, 0, 0.8),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+/* ========== Utilities：自定义工具类 ========== */
+@layer utilities {
+  /* 主题过渡：所有随明暗主题变色的元素统一使用（与主站一致） */
+  .theme-transition {
+    @apply transition-colors duration-theme ease-theme;
+  }
+
+  .animate-cheese-glow {
+    animation: cheese-glow 3s infinite ease-in-out;
+  }
+
+  .animate-bounce-x {
+    animation: bounce-x 1s infinite;
+  }
 }
 
-.search-input-no-outline:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-.glass-morphism-premium {
-  @apply bg-white/60 dark:bg-stone-900/60 backdrop-blur-2xl border border-white/50 dark:border-white/10 shadow-2xl;
-}
-
-/* Cheese Glow Animation */
 @keyframes cheese-glow {
-  0%, 100% { box-shadow: 0 0 10px rgba(255, 179, 0, 0.2), 0 0 20px rgba(255, 179, 0, 0.1); }
-  50% { box-shadow: 0 0 15px rgba(255, 179, 0, 0.4), 0 0 30px rgba(255, 179, 0, 0.2); }
+  0%, 100% { box-shadow: 0 0 10px theme('colors.cheese.600 / 20%'), 0 0 20px theme('colors.cheese.600 / 10%'); }
+  50% { box-shadow: 0 0 15px theme('colors.cheese.600 / 40%'), 0 0 30px theme('colors.cheese.600 / 20%'); }
 }
 
 @keyframes bounce-x {
@@ -113,166 +215,9 @@ body {
   50% { transform: translateX(25%); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
 }
 
-.animate-cheese-glow {
-  animation: cheese-glow 3s infinite ease-in-out;
-}
-
-.animate-bounce-x {
-  animation: bounce-x 1s infinite;
-}
-
-@supports not (backdrop-filter: blur(10px)) {
-  .glass-panel {
-    @apply bg-white/95 dark:bg-stone-900/95;
-  }
-}
-
-/* Markdown Code Block Overrides - Handled by Component now */
-.prose pre {
-  @apply !bg-transparent !p-0 !m-0 !border-none !shadow-none;
-}
-
-.prose pre code {
-  @apply !p-0 !m-0 !bg-transparent;
-}
-
-/* Custom Checkbox Styling */
-.checkbox-custom {
-  display: inline-block !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  appearance: none !important;
-  @apply relative w-5 h-5 rounded-md border-2 cursor-default transition-all duration-200 mr-2 mt-1 flex-shrink-0;
-  border-color: #FFD54F !important; /* cheese-400 */
-  background-color: #FFF8E1 !important; /* cheese-100 */
-}
-
-.dark .checkbox-custom {
-  border-color: #4E342E !important; /* cheese-950 */
-  background-color: #1c1917 !important; /* stone-900 */
-}
-
-.checkbox-custom:checked {
-  background-color: #FFB300 !important; /* cheese-600 */
-  border-color: #FFB300 !important;
-}
-
-.checkbox-custom:checked::after {
-  content: '';
-  @apply absolute left-[5px] top-[1px] w-[6px] h-[10px] border-r-2 border-b-2 border-white rotate-45;
-}
-
-/* Task list styling */
-.task-list-item {
-  @apply flex items-start list-none !ml-0 !pl-0 mb-2;
-}
-
-.task-list-item input[type="checkbox"]:not(.checkbox-custom) {
-  display: none !important;
-}
-
-.task-list-item p {
-  @apply m-0 leading-relaxed;
-}
-
-.text-gradient {
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(to right, #FF8F00, #FFCA28);
-}
-
-* {
-  touch-action: manipulation;
-  -webkit-user-drag: none;
-}
-
-/* Improve keyboard focus visibility for interactive elements */
-:focus-visible {
-  outline: 3px solid rgba(255, 193, 7, 0.9);
-  outline-offset: 3px;
-  border-radius: 0.5rem;
-}
-
-/* ----------------------------- */
-/* Search modal improvements       */
-/* ----------------------------- */
-
-/* keep input visually calm but still keyboard visible */
-.search-input-no-outline:focus-visible {
-  outline: none !important;
-  box-shadow: 0 0 0 6px rgba(255, 193, 7, 0.08), 0 6px 20px rgba(0,0,0,0.08);
-  border-radius: 0.75rem;
-}
-
-/* style selected result via accessibility attrs */
-.glass-panel [role="listbox"] [role="option"][aria-selected="true"] {
-  background: linear-gradient(90deg, rgba(255,179,0,0.98), rgba(255,153,0,0.95));
-  color: white !important;
-  box-shadow: 0 18px 40px -12px rgba(255,153,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06);
-  transform: scale(1.02);
-}
-
-.glass-panel [role="listbox"] [role="option"]:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 6px rgba(255, 193, 7, 0.08);
-  border-radius: 1rem;
-}
-
-/* reduce motion on small devices for result hover */
-@media (max-width: 640px) {
-  .glass-panel [role="listbox"] [role="option"] {
-    transition: background-color 120ms ease, transform 120ms ease;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-img, video, canvas {
-  max-width: 100%;
-  height: auto;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-button, a {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-
-/* Ensure interactive elements are large enough for touch on small devices */
-@media (max-width: 640px) {
-  button, a {
-    min-width: 44px;
-    min-height: 44px;
-    padding: 0.375rem; /* keep visual compactness while improving hit area */
-  }
-}
-
-input, textarea, select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  border-radius: 0;
-}
-
-.transform-gpu {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-perspective: 1000px;
-  perspective: 1000px;
-}
+/* ========== 多语言排版 ==========
+ * 刻意放在 @layer 之外（位于工具类之后），作为各语言的排版基线。
+ * 段落间距等只作用于 .prose（文章正文），不影响卡片、导航等界面元素。 */
 
 h1, h2, h3, h4, h5, h6 {
   text-wrap: balance;
@@ -282,31 +227,43 @@ p {
   text-wrap: pretty;
 }
 
+/* CJK：标点挤压 */
 :lang(zh), :lang(ja) {
-  text-align: justify;
   font-feature-settings: "palt";
 }
 
-:lang(zh) p, :lang(ja) p,
-:lang(zh) li, :lang(ja) li {
-  line-height: 1.9; /* Increased for better readability */
+/* CJK 段落：加大行高与字距 */
+:lang(zh) :is(p, li),
+:lang(ja) :is(p, li) {
+  line-height: 1.9;
   letter-spacing: 0.05em;
-  margin-bottom: 1.5em; /* Add space between paragraphs */
 }
 
-:lang(zh) h1, :lang(zh) h2, :lang(zh) h3, :lang(zh) h4, :lang(zh) h5, :lang(zh) h6,
-:lang(ja) h1, :lang(ja) h2, :lang(ja) h3, :lang(ja) h4, :lang(ja) h5, :lang(ja) h6 {
+/* CJK 标题：行高紧凑、按词组换行 */
+:lang(zh) :is(h1, h2, h3, h4, h5, h6),
+:lang(ja) :is(h1, h2, h3, h4, h5, h6) {
   line-height: 1.4;
   letter-spacing: 0.03em;
-  word-break: keep-all; 
+  word-break: keep-all;
   overflow-wrap: break-word;
   font-weight: 700;
-  margin-top: 2em; /* Clear separation for new sections */
-  margin-bottom: 1em;
-  text-wrap: balance;
 }
 
-:lang(en) {
+/* CJK 文章正文：段落两端对齐（仅正文；标题与居中的界面文字不受影响）、段落与章节间距 */
+:lang(zh) .prose :is(p, li),
+:lang(ja) .prose :is(p, li) {
+  text-align: justify;
+  margin-bottom: 1.5em;
+}
+
+:lang(zh) .prose :is(h1, h2, h3, h4, h5, h6),
+:lang(ja) .prose :is(h1, h2, h3, h4, h5, h6) {
+  margin-top: 2em;
+  margin-bottom: 1em;
+}
+
+/* 英文：只设默认行高（可被工具类覆盖），段落自动连字符 */
+html:lang(en) {
   line-height: 1.6;
 }
 
@@ -315,11 +272,18 @@ p {
   -webkit-hyphens: auto;
 }
 
-/* ----------------------------- */
-/* Footnotes styling + iOS emoji fix */
-/* ----------------------------- */
+/* ========== 第三方 / Markdown 覆盖 ========== */
 
-/* 修复脚注样式 */
+/* 代码块样式由组件负责 */
+.prose pre {
+  @apply !bg-transparent !p-0 !m-0 !border-none !shadow-none;
+}
+
+.prose pre code {
+  @apply !p-0 !m-0 !bg-transparent;
+}
+
+/* 脚注 */
 .prose .footnotes {
   @apply mt-12 pt-8 border-t border-cheese-200/60 dark:border-stone-800 text-sm;
 }
@@ -332,11 +296,10 @@ p {
   @apply pl-2 text-stone-600 dark:text-stone-400;
 }
 
-/* 【关键修复】针对 iOS 脚注返回链接的 Emoji 去除 */
+/* iOS 会把脚注返回符 ↩ 渲染成彩色 emoji：隐藏原文本（保留可访问性），用伪元素绘制单色箭头 */
 .prose .footnotes a[data-footnote-backref],
 .prose .footnotes a[href^="#fnref"] {
   @apply no-underline opacity-50 hover:opacity-100 transition-opacity ml-1 align-middle inline-block;
-  /* 隐藏原始文本（保留可访问性），使用伪元素渲染单色箭头，避免 iOS 彩色 emoji */
   color: transparent;
   position: relative;
   padding-left: 0.25rem;
@@ -355,13 +318,10 @@ p {
 }
 
 .dark .prose .footnotes a[href^="#fnref"]::after {
-  color: #FFD54F;
+  color: theme('colors.cheese.400');
 }
 
-/* ----------------------------- */
-/* Image Zoom Customization */
-/* ----------------------------- */
-
+/* 图片放大（react-medium-image-zoom） */
 [data-rmiz-overlay] {
   @apply bg-white/80 dark:bg-stone-950/90 backdrop-blur-xl transition-opacity duration-500 !important;
 }
@@ -381,4 +341,15 @@ p {
 
 [data-rmiz-btn-unzoom]:focus-visible {
   @apply ring-4 ring-cheese-400/50 !important;
+}
+
+/* 尊重系统"减少动态效果"设置（Framer Motion 由 MotionConfig 统一处理） */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

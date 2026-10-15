@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { useI18n } from '@/hooks/useI18n';
 import { Locale } from '@/types';
 
@@ -13,14 +13,17 @@ export function isLocale(value: unknown): value is Locale {
 }
 
 /**
- * 当前界面语言：以 URL 中的 /[lang] 为准，其次是用户上次选择的语言，最后回退到中文。
+ * 当前界面语言：以 URL 中的 /[lang] 为准；根路径 / 渲染的是中文内容，固定为中文；
+ * 其余不带语言的页面（如 404）使用用户上次选择的语言，最后回退到中文。
  */
 export function useLocale(): Locale {
   const params = useParams();
+  const pathname = usePathname();
   const { locale: storedLocale, _hasHydrated } = useI18n();
   const urlLocale = params?.lang;
 
   if (isLocale(urlLocale)) return urlLocale;
+  if (pathname === '/') return DEFAULT_LOCALE;
   return _hasHydrated ? storedLocale : DEFAULT_LOCALE;
 }
 

@@ -9,6 +9,7 @@ const Background = dynamic(() => import("@/components/ui/Background"), { ssr: fa
 const Footer = dynamic(() => import("@/components/layout/Footer"), { ssr: false });
 import NextTopLoader from 'nextjs-toploader';
 import ScrollToTop from "@/components/ui/ScrollToTop";
+import { LocaleSync } from "@/hooks/useLocale";
 
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
 const outfit = Outfit({ subsets: ["latin"], variable: '--font-outfit' });
@@ -72,8 +73,8 @@ export const viewport = {
   // userScalable: true is the a11y-friendly default; allow pinch-to-zoom
   viewportFit: 'cover',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#FFFBEB' },
-    { media: '(prefers-color-scheme: dark)', color: '#0c0a09' },
+    { media: '(prefers-color-scheme: light)', color: '#FFFDF5' }, // cheese-50
+    { media: '(prefers-color-scheme: dark)', color: '#0C0A09' },  // stone-950
   ],
 };
 
@@ -87,6 +88,14 @@ export default function RootLayout({
   const lang = params?.lang || "zh";
   return (
     <html lang={lang} suppressHydrationWarning className="scroll-smooth">
+      <head>
+        {/* 根布局拿不到 [lang] 参数：在首帧绘制前按 URL 修正 <html lang>，避免英文 / 日文页套用中文排版规则 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var l=location.pathname.split('/')[1];if(['zh','en','ja'].indexOf(l)>-1)document.documentElement.lang=l;})();`,
+          }}
+        />
+      </head>
       <body className={`${outfit.className} ${inter.variable} ${outfit.variable} ${jetbrainsMono.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
@@ -94,7 +103,7 @@ export default function RootLayout({
           enableSystem
         >
           <NextTopLoader 
-            color="#FFCA28"
+            color="#FFCA28" // cheese-500
             initialPosition={0.08}
             crawlSpeed={200}
             height={3}
@@ -102,7 +111,7 @@ export default function RootLayout({
             showSpinner={false}
             easing="ease"
             speed={200}
-            shadow="0 0 10px #FFCA28,0 0 5px #FFCA28"
+            shadow="0 0 10px #FFCA28,0 0 5px #FFCA28" // cheese-500
           />
           {/* Skip to main content — accessibility */}
           <a
@@ -111,7 +120,8 @@ export default function RootLayout({
           >
             Skip to main content
           </a>
-          <div className="w-full min-h-screen flex flex-col bg-cheese-50 dark:bg-[#0c0a09] text-cheese-950 dark:text-stone-200 transition-all duration-700 ease-theme-spring relative">
+          <LocaleSync />
+          <div className="w-full min-h-screen flex flex-col bg-cheese-50 dark:bg-stone-950 text-cheese-950 dark:text-stone-200 theme-transition relative">
             <Background />
             <Navbar />
             <main id="main-content" className="flex-grow mx-auto w-full max-w-[120rem] px-0 sm:px-6 lg:px-8 py-8 relative z-10">

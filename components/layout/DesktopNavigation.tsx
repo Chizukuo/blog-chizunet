@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useI18n } from '@/hooks/useI18n';
+import { useLocale } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ExternalLink } from 'lucide-react';
 
 /**
@@ -14,11 +14,9 @@ import { ExternalLink } from 'lucide-react';
  * - 首页 / 归档 / 标签 = 博客内路由
  */
 export default function DesktopNavigation() {
-  const { locale, _hasHydrated } = useI18n();
-  const currentLocale = _hasHydrated ? locale : 'zh';
+  const currentLocale = useLocale();
   const t = (translations as any)[currentLocale] ?? translations['zh'];
   const pathname = usePathname();
-  const reduceMotion = useReducedMotion();
 
   // 博客内部路由
   const internalLinks = [
@@ -57,7 +55,7 @@ export default function DesktopNavigation() {
               <motion.div
                 layoutId="nav-active-indicator"
                 className="absolute bottom-0 left-3 right-3 h-[2px] bg-cheese-500 rounded-full"
-                transition={reduceMotion ? undefined : {
+                transition={{
                   type: 'spring',
                   stiffness: 380,
                   damping: 30,

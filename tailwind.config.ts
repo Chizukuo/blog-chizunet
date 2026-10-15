@@ -1,5 +1,10 @@
 import type { Config } from "tailwindcss";
 
+/**
+ * Chizunet Blog 设计令牌 (Design Tokens)
+ * 色彩、圆角、动效与主站 chizunet.cc 共用同一套规范，完整说明见 DESIGN.md；
+ * 修改共享令牌时请同步主站的 tailwind.config.js。
+ */
 const config: Config = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,19 +14,20 @@ const config: Config = {
   darkMode: 'class',
   theme: {
     extend: {
+      // 色彩：品牌色阶 cheese；暗色模式中性色直接使用 Tailwind 内置的 stone
       colors: {
         cheese: {
-          50: '#FFFDF5',
-          100: '#FFF8E1',
-          200: '#FFECB3',
-          300: '#FFE082',
-          400: '#FFD54F',
-          500: '#FFCA28', // Main Cheese Yellow
-          600: '#FFB300',
-          700: '#FFA000',
-          800: '#FF8F00',
-          900: '#FF6F00',
-          950: '#4E342E', // Dark crust
+          50: '#FFFDF5',  // 页面背景（浅色）
+          100: '#FFF8E1', // 图标底块、浅色装饰
+          200: '#FFECB3', // 边框、悬停背景
+          300: '#FFE082', // 选区、装饰圆
+          400: '#FFD54F', // 暗色模式强调文字
+          500: '#FFCA28', // 品牌主色：进度条、徽章、主按钮
+          600: '#FFB300', // 强调文字 / 图标
+          700: '#FFA000', // 标签文字、渐变终点
+          800: '#FF8F00', // 图标按钮文字、正文链接
+          900: '#FF6F00', // 次要文字（配合透明度）
+          950: '#4E342E', // 正文主色（浅色模式，"面包皮"深棕）
         },
       },
       fontFamily: {
@@ -44,7 +50,8 @@ const config: Config = {
           '"Hiragino Kaku Gothic ProN"',
           '"Meiryo"',
           'sans-serif',
-        ],        mono: [
+        ],
+        mono: [
           'var(--font-mono)',
           'ui-monospace',
           'SFMono-Regular',
@@ -54,27 +61,20 @@ const config: Config = {
           '"Liberation Mono"',
           '"Courier New"',
           'monospace',
-        ],      },
-      animation: {
-        'float': 'float 6s ease-in-out infinite',
-        'blob': 'blob 7s infinite',
+        ],
       },
-      keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-20px)' },
-        },
-        blob: {
-          '0%': { transform: 'translate(0px, 0px) scale(1)' },
-          '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-          '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-          '100%': { transform: 'translate(0px, 0px) scale(1)' },
-        }
+      borderRadius: {
+        card: '2rem',     // 文章卡片、中型面板
+        panel: '2.5rem',  // 大面板：正文容器、搜索框、空状态
+        avatar: '3rem',   // 头像框（主站）
+      },
+      // 动效：主题切换 / 颜色过渡统一使用 duration-theme + ease-theme（.theme-transition）
+      transitionDuration: {
+        theme: '700ms',
       },
       transitionTimingFunction: {
-        'theme': 'cubic-bezier(0.4, 0, 0.2, 1)',
-        'theme-spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        'smooth': 'cubic-bezier(0.65, 0, 0.35, 1)',
+        theme: 'cubic-bezier(0.4, 0, 0.2, 1)',              // Material Design Standard
+        'theme-spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)', // 带回弹，仅用于缩放 / 位移
       },
       typography: (theme: any) => ({
         DEFAULT: {

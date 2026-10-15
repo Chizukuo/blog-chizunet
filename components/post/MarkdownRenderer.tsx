@@ -122,7 +122,7 @@ interface MarkdownRendererProps {
 }
 
 import Image from 'next/image';
-import { useI18n } from '@/hooks/useI18n';
+import { useLocale } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
 
 // Lazy-loaded heavy components
@@ -145,9 +145,7 @@ const CodeBlock = ({ children, className }: { children: any, className?: string 
   const [copied, setCopied] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
   const codeRef = React.useRef<HTMLElement>(null);
-  const { locale, _hasHydrated } = useI18n();
-  
-  const currentLocale = _hasHydrated ? locale : 'zh';
+  const currentLocale = useLocale();
   const t = translations[currentLocale];
   
   const langMatch = className?.match(/language-(\w+)(?::(.+))?/);
@@ -318,7 +316,12 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
           h4: ({ node, id, ...props }) => <HeadingWithAnchor level={4} id={id} {...props} className="scroll-mt-32 text-xl font-bold text-stone-800 dark:text-stone-200 mb-3 mt-6" />,
           h5: ({ node, id, ...props }) => <HeadingWithAnchor level={5} id={id} {...props} className="scroll-mt-32 text-lg font-bold text-stone-800 dark:text-stone-200 mb-2 mt-4" />,
           h6: ({ node, id, ...props }) => <HeadingWithAnchor level={6} id={id} {...props} className="scroll-mt-32 text-base font-bold text-stone-800 dark:text-stone-200 mb-2 mt-4 uppercase tracking-wider" />,
-          p: ({ node, ...props }) => <p {...props} className="mb-6 leading-relaxed text-stone-700 dark:text-stone-300" />,
+          p: ({ node, ...props }) => {
+            // 图片放大组件会渲染 <div>，不能嵌在 <p> 里（否则触发水合错误、整篇文章在客户端重渲染）
+            const hasImage = node?.children?.some((child: any) => child.type === 'element' && child.tagName === 'img');
+            const Tag = hasImage ? 'div' : 'p';
+            return <Tag {...props} className="mb-6 leading-relaxed text-stone-700 dark:text-stone-300" />;
+          },
           ul: ({ node, className, ...props }) => (
             <ul 
               {...props} 

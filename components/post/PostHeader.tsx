@@ -1,6 +1,6 @@
 'use client';
 
-import { useI18n } from '@/hooks/useI18n';
+import { useLocale } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
 import { calcReadingTime } from '@/lib/reading';
 import { format } from "date-fns";
@@ -9,7 +9,6 @@ import { Calendar, Clock, ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Post, Locale } from '@/types';
-import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { FastAverageColor } from 'fast-average-color';
 
@@ -26,10 +25,7 @@ function shouldOptimize(url: string): boolean {
 }
 
 export default function PostHeader({ post }: PostHeaderProps) {
-  const { locale, _hasHydrated } = useI18n();
-  const params = useParams();
-  const urlLocale = (params?.lang as Locale) || undefined;
-  const currentLocale = urlLocale || (_hasHydrated ? locale : 'zh');
+  const currentLocale = useLocale();
   const t = translations[currentLocale];
   const [ambientColor, setAmbientColor] = useState<string>('');
 
@@ -163,7 +159,7 @@ export default function PostHeader({ post }: PostHeaderProps) {
       </div>
 
       {post.coverImage && (
-        <div className="mt-8 sm:mt-12 relative w-full aspect-video sm:aspect-[2/1] rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden group">
+        <div className="mt-8 sm:mt-12 relative w-full aspect-video sm:aspect-[2/1] rounded-card sm:rounded-panel overflow-hidden group">
           <Image
             src={post.coverImage}
             alt={post.title}

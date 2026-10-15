@@ -18,7 +18,7 @@ export default function GlobalError({ error, reset }: ErrorProps) {
     <div className="min-h-[80vh] flex flex-col items-center justify-center text-center space-y-8 px-4">
       <div className="relative w-24 h-24">
         <div className="absolute inset-0 bg-red-200 dark:bg-red-900/20 blur-2xl rounded-full animate-pulse" />
-        <div className="relative w-full h-full bg-white dark:bg-stone-800 rounded-[2rem] flex items-center justify-center border border-red-200 dark:border-stone-700 shadow-xl">
+        <div className="relative w-full h-full bg-white dark:bg-stone-800 rounded-card flex items-center justify-center border border-red-200 dark:border-stone-700 shadow-xl">
           <AlertTriangle className="w-10 h-10 text-red-400" />
         </div>
       </div>

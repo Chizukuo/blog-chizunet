@@ -7,7 +7,7 @@
 export default function PostCardSkeleton({ featured = false }: { featured?: boolean }) {
   return (
     <div
-      className={`bg-white/60 dark:bg-stone-800/30 rounded-2xl sm:rounded-[2rem] border border-cheese-200/30 dark:border-stone-700/30 overflow-hidden animate-pulse ${
+      className={`bg-white/60 dark:bg-stone-800/30 rounded-2xl sm:rounded-card border border-cheese-200/30 dark:border-stone-700/30 overflow-hidden animate-pulse ${
         featured ? 'col-span-full md:col-span-2' : ''
       }`}
     >

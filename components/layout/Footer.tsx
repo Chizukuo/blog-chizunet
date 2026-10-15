@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Logo from '@/components/ui/Logo';
-import { useI18n } from '@/hooks/useI18n';
+import { useLocale } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
 import { Github, Mail, Rss, ArrowUpRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -11,8 +11,7 @@ import { useEffect, useState } from 'react';
 const SITE_LAUNCH_DATE = new Date('2025-03-01');
 
 export default function Footer() {
-  const { locale, _hasHydrated } = useI18n();
-  const currentLocale = _hasHydrated ? locale : 'zh';
+  const currentLocale = useLocale();
   const t = (translations as any)[currentLocale] ?? translations['zh'];
   const [runningDays, setRunningDays] = useState(0);
 

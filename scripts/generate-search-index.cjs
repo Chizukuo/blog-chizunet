@@ -8,7 +8,7 @@ const { getPosts } = require('@/lib/github');
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 const publicDir = path.join(process.cwd(), 'public');
-const languages = ['zh', 'en'];
+const languages = ['zh', 'en', 'ja'];
 
 async function generateSearchIndex() {
   console.log('Generating search index...');

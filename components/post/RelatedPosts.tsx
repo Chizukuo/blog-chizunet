@@ -2,7 +2,7 @@
 
 import { Post, Locale } from '@/types';
 import PostCard from './PostCard';
-import { useI18n } from '@/hooks/useI18n';
+import { useLocale } from '@/hooks/useLocale';
 import { translations } from '@/lib/translations';
 import { motion } from 'framer-motion';
 
@@ -12,8 +12,7 @@ interface RelatedPostsProps {
 }
 
 export default function RelatedPosts({ currentPost, allPosts }: RelatedPostsProps) {
-  const { locale, _hasHydrated } = useI18n();
-  const currentLocale = _hasHydrated ? locale : 'zh';
+  const currentLocale = useLocale();
   const t = (translations as any)[currentLocale] ?? translations['zh'];
 
   // Filter posts that share at least one tag, excluding the current post
